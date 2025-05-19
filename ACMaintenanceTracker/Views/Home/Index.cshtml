@@ -1,0 +1,83 @@
+﻿@{
+    ViewData["Title"] = "AC Maintenance Tracker";
+}
+
+<div class="text-center">
+    <h1 class="display-4">AC Maintenance Tracker</h1>
+    <p class="lead">Track and manage all your air conditioning unit maintenance records</p>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5>Recent Maintenance</h5>
+            </div>
+            <div class="card-body">
+                @if (ViewBag.RecentMaintenance.Count > 0)
+                {
+                    <ul class="list-group">
+                        @foreach (var record in ViewBag.RecentMaintenance)
+                        {
+                            <li class="list-group-item">
+                                <strong>@record.ACUnit.ACIdentifier</strong> - @record.MaintenanceDate.ToShortDateString()
+                                <span class="badge bg-info float-end">@record.MaintenanceType</span>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p>No recent maintenance records found.</p>
+                }
+            </div>
+            <div class="card-footer">
+                <a asp-controller="MaintenanceRecords" asp-action="Create" class="btn btn-success">Add New Maintenance</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-warning">
+                <h5>Due for Maintenance</h5>
+            </div>
+            <div class="card-body">
+                @if (ViewBag.DueForMaintenance.Count > 0)
+                {
+                    <ul class="list-group">
+                        @foreach (var unit in Model.DueForMaintenance)
+                        {
+                            var latestMaintenance = unit.MaintenanceRecords.OrderByDescending().FirstOrDefault();
+                            <li class="list-group-item">
+                                <strong>@unit.ACIdentifier</strong>
+                                @if (latestMaintenance?.NextMaintenanceDate.HasValue == true)
+                                {
+                                    var days = (latestMaintenance.NextMaintenanceDate.Value - DateTime.Today).Days;
+                                    <span class="float-end @(days < 0 ? "text-danger" : "text-warning")">
+                                        @(days < 0 ? "OVERDUE" : "Due in " + days + " days")
+                                    </span>
+                                }
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p>No AC units due for maintenance soon.</p>
+                }
+            </div>
+            <div class="card-footer">
+                <a asp-controller="ACUnits" asp-action="Index" class="btn btn-primary">View All AC Units</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="d-grid gap-2">
+            <a asp-controller="ACUnits" asp-action="Create" class="btn btn-lg btn-outline-primary">Add New AC Unit</a>
+        </div>
+    </div>
+</div>

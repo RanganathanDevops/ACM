@@ -1,0 +1,45 @@
+CREATE TABLE ACUnits (
+    Id SERIAL PRIMARY KEY,
+    ACIdentifier  VARCHAR(50) UNIQUE NOT NULL,
+    FloorNumber  INT NOT NULL,
+    RoomNumber  VARCHAR(20),
+    Model VARCHAR(100),
+    InstallationDate DATE,
+    CreatedAt  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE MaintenanceRecords (
+    Id SERIAL PRIMARY KEY,
+    ACUnitId  INT REFERENCES ac_units(id),
+    MaintenanceDate  DATE NOT NULL,
+    MaintenanceType  VARCHAR(100) NOT NULL,
+    TechnicianName  VARCHAR(100),
+    Notes TEXT,
+    NextMaintenanceDate  DATE,
+    CreatedAt  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+INSERT INTO ACUnits (ACIdentifier ,FloorNumber  , RoomNumber  , Model , InstallationDate ) VALUES
+('AC-101', 1, '101A', 'LG LS090HEV', '2020-05-15'),
+('AC-102', 1, '102B', 'LG LS090HEV', '2020-05-16'),
+('AC-201', 2, '201', 'Daikin FTXS25LVMA', '2019-11-10'),
+('AC-202', 2, '202', 'Daikin FTXS25LVMA', '2019-11-12'),
+('AC-301', 3, 'Conference Room', 'Mitsubishi Electric MUZ-GL09NA', '2021-03-22'),
+('AC-302', 3, 'Executive Office', 'Mitsubishi Electric MUZ-GL12NA', '2021-03-25'),
+('AC-103', 1, 'Lobby', 'Carrier 40MBFQ24-3', '2018-07-30'),
+('AC-203', 2, 'Server Room', 'Fujitsu AOU24RLXFZ', '2022-01-15');
+
+INSERT INTO MaintenanceRecords (ACUnitId  , MaintenanceDate  , MaintenanceType  , TechnicianName  , Notes , NextMaintenanceDate  ) VALUES
+(1, '2023-01-10', 'Regular Cleaning', 'John Smith', 'Cleaned filters, checked refrigerant levels', '2023-04-10'),
+(1, '2023-04-12', 'Regular Cleaning', 'Maria Garcia', 'Cleaned filters, no issues found', '2023-07-12'),
+(2, '2023-01-11', 'Regular Cleaning', 'John Smith', 'Cleaned filters, minor condensation leak fixed', '2023-04-11'),
+(3, '2023-02-05', 'Comprehensive Check', 'Robert Chen', 'Full system check, replaced worn fan belt', '2023-08-05'),
+(4, '2023-02-07', 'Regular Cleaning', 'Robert Chen', 'Standard filter cleaning', '2023-05-07'),
+(5, '2023-03-15', 'Preventive Maintenance', 'Sarah Johnson', 'Checked electrical connections, cleaned condenser coils', '2023-09-15'),
+(6, '2023-03-18', 'Emergency Repair', 'Michael Brown', 'Fixed refrigerant leak, recharged system', '2023-06-18'),
+(7, '2023-01-20', 'Regular Cleaning', 'Maria Garcia', 'High traffic area - filters very dirty', '2023-04-20'),
+(8, '2023-01-25', 'Server Room Special', 'David Wilson', 'Critical system - full diagnostics performed', '2023-04-25'),
+(1, '2023-07-15', 'Regular Cleaning', 'John Smith', 'Standard maintenance, system running well', '2023-10-15'),
+(2, '2023-04-13', 'Regular Cleaning', 'Maria Garcia', 'Normal maintenance, no issues', '2023-07-13'),
+(8, '2023-04-28', 'Server Room Special', 'David Wilson', 'Pre-summer intensive check', '2023-07-28');
