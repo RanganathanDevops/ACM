@@ -1,26 +1,30 @@
-CREATE TABLE ACUnits (
-    Id SERIAL PRIMARY KEY,
-    ACIdentifier  VARCHAR(50) UNIQUE NOT NULL,
-    FloorNumber  INT NOT NULL,
-    RoomNumber  VARCHAR(20),
-    Model VARCHAR(100),
-    InstallationDate DATE,
-    CreatedAt  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+-------------------------
+
+CREATE TABLE "ACUnits" (
+    "Id" SERIAL PRIMARY KEY,
+    "ACIdentifier" VARCHAR(50) UNIQUE NOT NULL,
+    "FloorNumber" INT NOT NULL,
+    "RoomNumber" VARCHAR(20),
+    "Model" VARCHAR(100),
+    "InstallationDate" DATE,
+    "CreatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE MaintenanceRecords (
-    Id SERIAL PRIMARY KEY,
-    ACUnitId  INT REFERENCES ac_units(id),
-    MaintenanceDate  DATE NOT NULL,
-    MaintenanceType  VARCHAR(100) NOT NULL,
-    TechnicianName  VARCHAR(100),
-    Notes TEXT,
-    NextMaintenanceDate  DATE,
-    CreatedAt  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE "MaintenanceRecords" (
+    "Id" SERIAL PRIMARY KEY,
+    "ACUnitId" INT REFERENCES "ACUnits"("Id"),
+    "MaintenanceDate" DATE NOT NULL,
+    "MaintenanceType" VARCHAR(100) NOT NULL,
+    "TechnicianName" VARCHAR(100),
+    "Notes" TEXT,
+    "NextMaintenanceDate" DATE,
+    "CreatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
-
-INSERT INTO ACUnits (ACIdentifier ,FloorNumber  , RoomNumber  , Model , InstallationDate ) VALUES
+----------------------------
+------------------------------------------
+-- Insert into ACUnits (PascalCase)
+INSERT INTO "ACUnits" ("ACIdentifier", "FloorNumber", "RoomNumber", "Model", "InstallationDate") VALUES
 ('AC-101', 1, '101A', 'LG LS090HEV', '2020-05-15'),
 ('AC-102', 1, '102B', 'LG LS090HEV', '2020-05-16'),
 ('AC-201', 2, '201', 'Daikin FTXS25LVMA', '2019-11-10'),
@@ -30,7 +34,8 @@ INSERT INTO ACUnits (ACIdentifier ,FloorNumber  , RoomNumber  , Model , Installa
 ('AC-103', 1, 'Lobby', 'Carrier 40MBFQ24-3', '2018-07-30'),
 ('AC-203', 2, 'Server Room', 'Fujitsu AOU24RLXFZ', '2022-01-15');
 
-INSERT INTO MaintenanceRecords (ACUnitId  , MaintenanceDate  , MaintenanceType  , TechnicianName  , Notes , NextMaintenanceDate  ) VALUES
+-- Insert into MaintenanceRecords (PascalCase)
+INSERT INTO "MaintenanceRecords" ("ACUnitId", "MaintenanceDate", "MaintenanceType", "TechnicianName", "Notes", "NextMaintenanceDate") VALUES
 (1, '2023-01-10', 'Regular Cleaning', 'John Smith', 'Cleaned filters, checked refrigerant levels', '2023-04-10'),
 (1, '2023-04-12', 'Regular Cleaning', 'Maria Garcia', 'Cleaned filters, no issues found', '2023-07-12'),
 (2, '2023-01-11', 'Regular Cleaning', 'John Smith', 'Cleaned filters, minor condensation leak fixed', '2023-04-11'),
