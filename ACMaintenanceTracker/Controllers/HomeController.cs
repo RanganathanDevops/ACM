@@ -26,26 +26,43 @@ namespace ACMaintenanceTracker.Controllers
         // Update your HomeController
         public async Task<IActionResult> Index()
         {
-            var recentMaintenance = await _context.MaintenanceRecords
-                .Include(m => m.ACUnit)
-                .OrderByDescending(m => m.MaintenanceDate)
-                .Take(5)
-                .ToListAsync();
-
-            var dueForMaintenance = await _context.ACUnits
-                .Include(a => a.MaintenanceRecords)
-                .Where(a => a.MaintenanceRecords.Any(m =>
-                    m.NextMaintenanceDate.HasValue &&
-                    m.NextMaintenanceDate <= DateTime.Today.AddDays(30)))
-                .ToListAsync();
-
-            var viewModel = new HomeViewModel
+            try
             {
-                RecentMaintenance = recentMaintenance,
-                DueForMaintenance = dueForMaintenance
-            };
 
-            return View(viewModel);
+                var todayUtc = DateTime.UtcNow.Date;
+                var thirtyDaysFromNowUtc = todayUtc.AddDays(30);
+
+                var recentMaintenance = await _context.MaintenanceRecords
+                    .Include(m => m.ACUnit)
+                    .OrderByDescending(m => m.MaintenanceDate)
+                    .Take(5)
+                    .ToListAsync();
+
+                var dueForMaintenance = await _context.ACUnits
+                    .Include(a => a.MaintenanceRecords)
+                    .Where(a => a.MaintenanceRecords.Any(m =>
+                        m.NextMaintenanceDate.HasValue &&
+                        m.NextMaintenanceDate.Value.Date <= thirtyDaysFromNowUtc))
+                    .ToListAsync();
+
+                var viewModel = new HomeViewModel
+                {
+                    RecentMaintenance = recentMaintenance,
+                    DueForMaintenance = dueForMaintenance
+                };
+
+                //ViewBag.RecentMaintenance = recentMaintenance;
+                //ViewBag.DueForMaintenance = dueForMaintenance;
+
+                //return View();
+
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                // Log the error or return a meaningful error message
+                return Content($"An error occurred: {ex.Message}");
+            }
         }
     }
 }
