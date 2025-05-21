@@ -1,0 +1,140 @@
+﻿@model ACMaintenanceTracker.Models.MaintenanceRecord
+@{
+    ViewData["Title"] = "Delete Maintenance Record";
+}
+
+<style>
+    .delete-container {
+        max-width: 700px;
+        margin: 40px auto;
+        padding: 30px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .delete-header {
+        color: #e74c3c;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #f5b7b1;
+    }
+
+    .confirmation-message {
+        margin-bottom: 25px;
+        font-size: 1.1em;
+        line-height: 1.6;
+        color: #555;
+    }
+
+    .warning-alert {
+        padding: 15px;
+        background-color: #fdecea;
+        border-left: 4px solid #e74c3c;
+        border-radius: 4px;
+        margin-bottom: 25px;
+        color: #e74c3c;
+    }
+
+    .details-list {
+        margin-bottom: 30px;
+    }
+
+        .details-list dt {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-top: 15px;
+        }
+
+        .details-list dd {
+            margin-left: 0;
+            padding: 8px 0;
+            color: #555;
+            border-bottom: 1px solid #eee;
+        }
+
+    .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-right: 10px;
+        font-size: 15px;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+    .btn-danger {
+        background-color: #e74c3c;
+        color: white;
+    }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+    .btn-secondary {
+        background-color: #95a5a6;
+        color: white;
+    }
+
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+</style>
+
+<div class="delete-container">
+    <h2 class="delete-header">@ViewData["Title"]</h2>
+
+    <div class="warning-alert">
+        <strong>Warning:</strong> This action cannot be undone. The maintenance record will be permanently deleted.
+    </div>
+
+    <div class="confirmation-message">
+        Are you sure you want to delete this maintenance record for AC Unit <strong>@Model.ACUnit.ACIdentifier</strong>?
+    </div>
+
+    <dl class="details-list">
+        <dt>Maintenance Date</dt>
+        <dd>@Model.MaintenanceDate.ToShortDateString()</dd>
+
+        <dt>Maintenance Type</dt>
+        <dd>@Model.MaintenanceType</dd>
+
+        <dt>Technician Name</dt>
+        <dd>@Model.TechnicianName</dd>
+
+        <dt>Next Maintenance Date</dt>
+        <dd>@(Model.NextMaintenanceDate?.ToShortDateString() ?? "Not scheduled")</dd>
+
+        <dt>Notes</dt>
+        <dd>@(string.IsNullOrEmpty(Model.Notes) ? "No notes" : Model.Notes)</dd>
+    </dl>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-danger">Delete Permanently</button>
+        <a href="@Url.Action("Details", "ACUnits", new { id = Model.ACUnitId })" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Enhance delete confirmation
+            $('form').submit(function(e) {
+                if (!confirm('Are you absolutely sure you want to delete this maintenance record? This action cannot be undone.')) {
+                    e.preventDefault();
+                    return false;
+                }
+                // Show loading state
+                $('.btn-danger').html('<i class="fas fa-spinner fa-spin"></i> Deleting...').prop('disabled', true);
+                return true;
+            });
+
+            // Add animation to the warning alert
+            $('.warning-alert').hide().fadeIn(500);
+        });
+    </script>
+}

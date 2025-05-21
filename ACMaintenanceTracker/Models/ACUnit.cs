@@ -67,4 +67,14 @@ namespace ACMaintenanceTracker.Models
         public string Model { get; set; }
         public DateTime InstallationDate { get; set; }
     }
+
+    public class ACUnitEditViewModel
+    {
+        public int Id { get; set; }
+        public string ACIdentifier { get; set; }
+        public int FloorNumber { get; set; }
+        public string RoomNumber { get; set; }
+        public string Model { get; set; }
+        public DateTime InstallationDate { get; set; }
+    }
 }

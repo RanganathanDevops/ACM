@@ -17,7 +17,8 @@ namespace ACMaintenanceTracker.Controllers
         // GET: MaintenanceRecords/Create
         public IActionResult Create(int acUnitId)
         {
-            var acUnit = _context.ACUnits.Find(acUnitId);
+            //var acUnit = _context.ACUnits.Find(acUnitId);
+            var acUnit = _context.ACUnits.Find(1);
             if (acUnit == null)
             {
                 return NotFound();

@@ -4,98 +4,56 @@
     ViewData["Title"] = "AC Units Management";
 }
 
-<div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h2 mb-0">
-            <i class="fas fa-snowflake text-primary me-2"></i>AC Units
-        </h1>
-        <a asp-action="Create" class="btn btn-primary btn-sm">
-            <i class="fas fa-plus me-2"></i>Add New Unit
-        </a>
-    </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
 
-    <div class="card shadow-sm">
-        <div class="card-header bg-white border-bottom">
-            <div class="d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">
-                    <i class="fas fa-table text-muted me-2"></i>Units List
-                </h5>
-                <div class="d-flex">
-                    <div class="input-group input-group-sm" style="width: 200px;">
-                        <span class="input-group-text bg-white"><i class="fas fa-search"></i></span>
-                        <input type="text" id="customSearch" class="form-control form-control-sm" placeholder="Search...">
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table id="acUnitsTable" class="table table-hover mb-0" style="width:100%">
-                    <thead class="bg-light">
-                        <tr>
-                            <th>Unit ID</th>
-                            <th>Floor</th>
-                            <th>Room</th>
-                            <th>Model</th>
-                            <th>Installed</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model)
-                        {
-                            <tr>
-                                <td class="align-middle">@item.ACIdentifier</td>
-                                <td class="align-middle">@item.FloorNumber</td>
-                                <td class="align-middle">@item.RoomNumber</td>
-                                <td class="align-middle">@item.Model</td>
-                                <td class="align-middle">@item.InstallationDate.ToString()</td>
-                                <td class="align-middle">
-                                    <div class="d-inline-flex">
-                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info mx-1" title="View Details">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning mx-1" title="Edit">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger mx-1" title="Delete">
-                                            <i class="fas fa-trash"></i>
-                                        </a>
-                                        <a asp-action="GenerateQRCode" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary mx-1" title="QR Code">
-                                            <i class="fas fa-qrcode"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-@section Styles {
+    <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" />
+
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
     <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #6c757d;
+            --info-color: #0dcaf0;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+        }
+
         body {
             background-color: #f8f9fa;
+            padding-top: 1rem;
+        }
+
+        .container-fluid {
+            max-width: 1400px;
         }
 
         .card {
             border: none;
             border-radius: 0.5rem;
             overflow: hidden;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
         }
 
         .card-header {
             padding: 1rem 1.25rem;
             background-color: white;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .table {
             margin-bottom: 0;
+            font-size: 0.875rem;
         }
 
             .table th {
@@ -105,12 +63,15 @@
                 letter-spacing: 0.5px;
                 padding: 0.75rem 1rem;
                 white-space: nowrap;
+                background-color: #f8f9fa;
+                border-bottom-width: 1px;
             }
 
             .table td {
                 padding: 0.75rem 1rem;
                 vertical-align: middle;
                 white-space: nowrap;
+                border-top: 1px solid #f1f1f1;
             }
 
         .table-hover tbody tr:hover {
@@ -126,42 +87,42 @@
         }
 
         .btn-outline-info {
-            color: #0dcaf0;
-            border-color: #0dcaf0;
+            color: var(--info-color);
+            border-color: var(--info-color);
         }
 
             .btn-outline-info:hover {
-                background-color: #0dcaf0;
+                background-color: var(--info-color);
                 color: white;
             }
 
         .btn-outline-warning {
-            color: #ffc107;
-            border-color: #ffc107;
+            color: var(--warning-color);
+            border-color: var(--warning-color);
         }
 
             .btn-outline-warning:hover {
-                background-color: #ffc107;
+                background-color: var(--warning-color);
                 color: #212529;
             }
 
         .btn-outline-danger {
-            color: #dc3545;
-            border-color: #dc3545;
+            color: var(--danger-color);
+            border-color: var(--danger-color);
         }
 
             .btn-outline-danger:hover {
-                background-color: #dc3545;
+                background-color: var(--danger-color);
                 color: white;
             }
 
         .btn-outline-secondary {
-            color: #6c757d;
-            border-color: #6c757d;
+            color: var(--secondary-color);
+            border-color: var(--secondary-color);
         }
 
             .btn-outline-secondary:hover {
-                background-color: #6c757d;
+                background-color: var(--secondary-color);
                 color: white;
             }
 
@@ -171,6 +132,7 @@
 
         #customSearch {
             border-left: none;
+            font-size: 0.875rem;
         }
 
             #customSearch:focus {
@@ -181,13 +143,109 @@
         .input-group-text {
             background-color: white;
             border-right: none;
+            font-size: 0.875rem;
+        }
+
+        .action-buttons .btn {
+            margin: 0 0.15rem;
+        }
+
+        .text-primary {
+            color: var(--primary-color) !important;
+        }
+
+        .page-item.active .page-link {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .page-link {
+            color: var(--primary-color);
         }
     </style>
-}
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h2 mb-0">
+                <i class="fas fa-snowflake text-primary me-2"></i>AC Units
+            </h1>
+            <a asp-action="Create" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus me-2"></i>Add New Unit
+            </a>
+        </div>
 
-@section Scripts {
+        <div class="card shadow-sm">
+            <div class="card-header bg-white border-bottom">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-table text-muted me-2"></i>Units List
+                    </h5>
+                    <div class="d-flex">
+                        <div class="input-group input-group-sm" style="width: 200px;">
+                            <span class="input-group-text bg-white"><i class="fas fa-search"></i></span>
+                            <input type="text" id="customSearch" class="form-control form-control-sm" placeholder="Search...">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table id="acUnitsTable" class="table table-hover mb-0" style="width:100%">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Unit ID</th>
+                                <th>Floor</th>
+                                <th>Room</th>
+                                <th>Model</th>
+                                <th>Installed</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="align-middle">@item.ACIdentifier</td>
+                                    <td class="align-middle">@item.FloorNumber</td>
+                                    <td class="align-middle">@item.RoomNumber</td>
+                                    <td class="align-middle">@item.Model</td>
+                                    <td class="align-middle">@item.InstallationDate.ToString()</td>
+                                    <td class="align-middle">
+                                        <div class="action-buttons">
+                                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                            <a asp-action="GenerateQRCode" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary" title="QR Code">
+                                                <i class="fas fa-qrcode"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+
     <script>
         $(document).ready(function () {
             var table = $('#acUnitsTable').DataTable({
@@ -218,8 +276,8 @@
             });
 
             // Custom search box functionality
-            $('#customSearch').keyup(function () {
-                table.search($(this).val()).draw();
+            $('#customSearch').on('keyup', function () {
+                table.search(this.value).draw();
             });
 
             // Initialize tooltips
@@ -229,4 +287,5 @@
             });
         });
     </script>
-}
+</body>
+</html>

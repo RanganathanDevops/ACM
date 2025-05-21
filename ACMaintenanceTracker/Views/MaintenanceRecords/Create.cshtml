@@ -1,0 +1,226 @@
+﻿@model ACMaintenanceTracker.Models.MaintenanceRecord
+@{
+    ViewData["Title"] = "Create Maintenance Record";
+    var acIdentifier = ViewData["ACIdentifier"] as string;
+    var acUnitId = ViewData["ACUnitId"] as int?;
+}
+
+<style>
+    .maintenance-form {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 30px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .form-header {
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+        .form-header h2 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .form-header h4 {
+            color: #7f8c8d;
+            font-weight: normal;
+        }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #34495e;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 15px;
+        transition: border-color 0.3s;
+    }
+
+        .form-control:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+    textarea.form-control {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-right: 10px;
+        font-size: 15px;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+    .btn-primary {
+        background-color: #3498db;
+        color: white;
+    }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+    .btn-secondary {
+        background-color: #95a5a6;
+        color: white;
+    }
+
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+
+    .validation-summary-errors {
+        color: #e74c3c;
+        margin-bottom: 20px;
+        padding: 15px;
+        background-color: #fdecea;
+        border-radius: 6px;
+        border-left: 4px solid #e74c3c;
+    }
+
+    .field-validation-error {
+        color: #e74c3c;
+        font-size: 0.9em;
+        margin-top: 5px;
+        display: block;
+    }
+
+    .input-validation-error {
+        border-color: #e74c3c;
+    }
+</style>
+
+<div class="maintenance-form">
+    <div class="form-header">
+        <h2>@ViewData["Title"]</h2>
+        <h4>AC Unit: @acIdentifier</h4>
+    </div>
+
+    <form asp-action="Create">
+        <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+        <input type="hidden" asp-for="ACUnitId" />
+
+        <div class="form-group">
+            <label asp-for="MaintenanceDate" class="form-label"></label>
+            <input asp-for="MaintenanceDate" class="form-control" type="date" />
+            <span asp-validation-for="MaintenanceDate" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="MaintenanceType" class="form-label"></label>
+            <select asp-for="MaintenanceType" class="form-control">
+                <option value="">-- Select Maintenance Type --</option>
+                <option value="Routine Check">Routine Check</option>
+                <option value="Filter Replacement">Filter Replacement</option>
+                <option value="Coil Cleaning">Coil Cleaning</option>
+                <option value="Refrigerant Recharge">Refrigerant Recharge</option>
+                <option value="Electrical Repair">Electrical Repair</option>
+                <option value="Mechanical Repair">Mechanical Repair</option>
+                <option value="Other">Other</option>
+            </select>
+            <span asp-validation-for="MaintenanceType" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="TechnicianName" class="form-label"></label>
+            <input asp-for="TechnicianName" class="form-control" />
+            <span asp-validation-for="TechnicianName" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Notes" class="form-label"></label>
+            <textarea asp-for="Notes" class="form-control" rows="4"></textarea>
+            <span asp-validation-for="Notes" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="NextMaintenanceDate" class="form-label"></label>
+            <input asp-for="NextMaintenanceDate" class="form-control" type="date" />
+            <span asp-validation-for="NextMaintenanceDate" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Create Record</button>
+            <a href="@Url.Action("Details", "ACUnits", new { id = acUnitId })" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Set today's date as default for MaintenanceDate
+            var today = new Date().toISOString().split('T')[0];
+            $('#MaintenanceDate').val(today);
+
+            // Enhance form validation
+            $('form').submit(function(e) {
+                let isValid = true;
+
+                // Clear previous errors
+                $('.field-validation-error').text('');
+                $('.form-control').removeClass('input-validation-error');
+
+                // Validate MaintenanceType
+                if (!$('#MaintenanceType').val()) {
+                    $('#MaintenanceType').addClass('input-validation-error');
+                    $('#MaintenanceType').next('.field-validation-error').text('Please select a maintenance type');
+                    isValid = false;
+                }
+
+                // Validate TechnicianName
+                if (!$('#TechnicianName').val()) {
+                    $('#TechnicianName').addClass('input-validation-error');
+                    $('#TechnicianName').next('.field-validation-error').text('Technician name is required');
+                    isValid = false;
+                }
+
+                if (!isValid) {
+                    e.preventDefault();
+                    $('.validation-summary-errors').text('Please fix the errors below before submitting.');
+                    if ($('.validation-summary-errors').is(':empty')) {
+                        $('.validation-summary-errors').prepend('<span>Please fix the errors below before submitting.</span>');
+                    }
+                }
+            });
+
+            // Add nice date picker behavior
+            $('input[type="date"]').on('focus', function() {
+                this.type = 'text';
+                $(this).datepicker({
+                    dateFormat: 'yy-mm-dd',
+                    changeMonth: true,
+                    changeYear: true
+                }).focus();
+            });
+        });
+    </script>
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

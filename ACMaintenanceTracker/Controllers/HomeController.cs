@@ -51,10 +51,6 @@ namespace ACMaintenanceTracker.Controllers
                     DueForMaintenance = dueForMaintenance
                 };
 
-                //ViewBag.RecentMaintenance = recentMaintenance;
-                //ViewBag.DueForMaintenance = dueForMaintenance;
-
-                //return View();
 
                 return View(viewModel);
             }

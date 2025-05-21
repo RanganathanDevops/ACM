@@ -103,8 +103,17 @@ namespace ACMaintenanceTracker.Controllers
         // POST: ACUnits/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ACIdentifier,FloorNumber,RoomNumber,Model,InstallationDate")] ACUnit aCUnit)
+        public async Task<IActionResult> Edit(int id, ACUnitEditViewModel viewModel)
         {
+            var aCUnit = new ACUnit
+            {
+                Id = viewModel.Id,
+                ACIdentifier = viewModel.ACIdentifier,
+                FloorNumber = viewModel.FloorNumber,
+                RoomNumber = viewModel.RoomNumber,
+                Model = viewModel.Model,
+                InstallationDate = viewModel.InstallationDate.ToUniversalTime()
+            };
             if (id != aCUnit.Id)
             {
                 return NotFound();
@@ -114,6 +123,7 @@ namespace ACMaintenanceTracker.Controllers
             {
                 try
                 {
+                    
                     _context.Update(aCUnit);
                     await _context.SaveChangesAsync();
                 }

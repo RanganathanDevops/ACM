@@ -1,64 +1,340 @@
 ﻿@model ACMaintenanceTracker.Models.ACUnit
-
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     ViewData["Title"] = "Create New AC Unit";
+    Layout = null; // Remove this if you're using a layout page
 }
 
-<h1>Create New AC Unit</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --success-color: #4cc9f0;
+            --danger-color: #f72585;
+        }
 
-<hr />
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group mb-3">
-                <label asp-for="ACIdentifier" class="control-label"></label>
-                <input asp-for="ACIdentifier" class="form-control" />
-                <span asp-validation-for="ACIdentifier" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="FloorNumber" class="control-label"></label>
-                <input asp-for="FloorNumber" class="form-control" />
-                <span asp-validation-for="FloorNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="RoomNumber" class="control-label"></label>
-                <input asp-for="RoomNumber" class="form-control" />
-                <span asp-validation-for="RoomNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="Model" class="control-label"></label>
-                <input asp-for="Model" class="form-control" />
-                <span asp-validation-for="Model" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="InstallationDate" class="control-label"></label>
-                <input asp-for="InstallationDate" class="form-control" type="date" />
-                <span asp-validation-for="InstallationDate" class="text-danger"></span>
-            </div>
-            @* <div class="form-group mb-3">
-                <label asp-for="InstallationDate" class="control-label"></label>
-                <input asp-for="InstallationDate" class="form-control" type="date" />
-                <span asp-validation-for="InstallationDate" class="text-danger"></span>
-            </div> *@
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-            </div>
-        </form>
+        body {
+            background-color: #f5f7fb;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--dark-color);
+        }
+
+        .form-container {
+            max-width: 800px;
+            margin: 3rem auto;
+            padding: 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background: white;
+        }
+
+        .form-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+            .form-header h1 {
+                font-weight: 700;
+                margin-bottom: 0.5rem;
+            }
+
+            .form-header p {
+                opacity: 0.9;
+                margin-bottom: 0;
+            }
+
+        .form-body {
+            padding: 2.5rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            height: 50px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+            .form-control:focus {
+                border-color: var(--accent-color);
+                box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+            }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+
+            .btn-primary:hover {
+                background-color: var(--secondary-color);
+                border-color: var(--secondary-color);
+                transform: translateY(-2px);
+            }
+
+        .btn-outline-secondary {
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+            .btn-outline-secondary:hover {
+                transform: translateY(-2px);
+            }
+
+        .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .validation-summary-errors ul {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 1.5rem;
+        }
+
+        .validation-summary-errors li {
+            color: var(--danger-color);
+            padding: 0.75rem 1rem;
+            background-color: rgba(247, 37, 133, 0.1);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .field-validation-error {
+            color: var(--danger-color);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: block;
+        }
+
+        .input-group-text {
+            background-color: #f0f2f5;
+            border-color: #e0e0e0;
+        }
+
+        /* Animation classes */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .slide-up {
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @@keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .form-container {
+                margin: 1rem;
+                border-radius: 0;
+            }
+
+            .form-body {
+                padding: 1.5rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .btn-primary, .btn-outline-secondary {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container fade-in">
+        <div class="form-header slide-up">
+            <h1><i class="fas fa-snowflake me-2"></i>Create New AC Unit</h1>
+            <p>Add a new air conditioning unit to the maintenance tracking system</p>
+        </div>
+
+        <div class="form-body">
+            <form asp-action="Create" id="acUnitForm" class="slide-up" style="animation-delay: 0.1s">
+                <div asp-validation-summary="ModelOnly" class="validation-summary-errors mb-4"></div>
+
+                <div class="mb-4">
+                    <label asp-for="ACIdentifier" class="form-label">
+                        <i class="fas fa-id-card-alt me-2"></i>Unit Identifier
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-barcode"></i></span>
+                        <input asp-for="ACIdentifier" class="form-control" placeholder="AC-1001" />
+                    </div>
+                    <span asp-validation-for="ACIdentifier" class="field-validation-error"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label asp-for="FloorNumber" class="form-label">
+                            <i class="fas fa-layer-group me-2"></i>Floor Number
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-building"></i></span>
+                            <input asp-for="FloorNumber" class="form-control" placeholder="1" id="floorInput" />
+                        </div>
+                        <span asp-validation-for="FloorNumber" class="field-validation-error"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <label asp-for="RoomNumber" class="form-label">
+                            <i class="fas fa-door-open me-2"></i>Room Number
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                            <input asp-for="RoomNumber" class="form-control" placeholder="101" id="roomInput" />
+                        </div>
+                        <span asp-validation-for="RoomNumber" class="field-validation-error"></span>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Model" class="form-label">
+                        <i class="fas fa-cog me-2"></i>AC Model
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-info-circle"></i></span>
+                        <input asp-for="Model" class="form-control" placeholder="e.g., LG Dual Inverter" />
+                    </div>
+                    <span asp-validation-for="Model" class="field-validation-error"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="InstallationDate" class="form-label">
+                        <i class="fas fa-calendar-alt me-2"></i>Installation Date
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-clock"></i></span>
+                        <input asp-for="InstallationDate" class="form-control" type="date" id="installationDate" />
+                    </div>
+                    <span asp-validation-for="InstallationDate" class="field-validation-error"></span>
+                </div>
+
+                <div class="action-buttons">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus-circle me-2"></i>Create AC Unit
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery Validation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+
     <script>
-        // Set default date to today
         document.addEventListener('DOMContentLoaded', function() {
+            // Set default date to today
             const today = new Date().toISOString().split('T')[0];
-            document.getElementById('InstallationDate').value = today;
+            document.getElementById('installationDate').value = today;
+
+            // Input masking and validation
+            const floorInput = document.getElementById('floorInput');
+            const roomInput = document.getElementById('roomInput');
+
+            if (floorInput) {
+                floorInput.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                });
+            }
+
+            if (roomInput) {
+                roomInput.addEventListener('input', function() {
+                    // Allow alphanumeric room numbers
+                    this.value = this.value.replace(/[^a-zA-Z0-9]/g, '');
+                });
+            }
+
+            // Form submission handling
+            const form = document.getElementById('acUnitForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const submitButton = form.querySelector('button[type="submit"]');
+                    if (submitButton) {
+                        submitButton.disabled = true;
+                        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creating...';
+                    }
+                });
+            }
+
+            // Add animation to form elements
+            const formGroups = document.querySelectorAll('.mb-4');
+            formGroups.forEach((group, index) => {
+                group.style.animation = `slideUp 0.5s ease-out ${0.2 + (index * 0.1)}s forwards`;
+                group.style.opacity = '0';
+            });
+
+            // Input focus effects
+            const inputs = document.querySelectorAll('.form-control');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.querySelector('.input-group-text').style.backgroundColor = '#e0e7ff';
+                });
+
+                input.addEventListener('blur', function() {
+                    this.parentElement.querySelector('.input-group-text').style.backgroundColor = '#f0f2f5';
+                });
+            });
         });
     </script>
-}
+</body>
+</html>
