@@ -30,6 +30,7 @@ namespace ACMaintenanceTracker.Models
         public List<MaintenanceRecord> MaintenanceRecords { get; set; }
     }
 
+
     public class MaintenanceRecord
     {
         public int Id { get; set; }
@@ -56,5 +57,14 @@ namespace ACMaintenanceTracker.Models
 
         public int ACUnitId { get; set; }
         public ACUnit ACUnit { get; set; }
+    }
+
+    public class ACUnitCreateViewModel
+    {
+        public string ACIdentifier { get; set; }
+        public int FloorNumber { get; set; }
+        public string RoomNumber { get; set; }
+        public string Model { get; set; }
+        public DateTime InstallationDate { get; set; }
     }
 }

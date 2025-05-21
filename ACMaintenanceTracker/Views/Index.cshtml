@@ -1,5 +1,8 @@
 ﻿@model IEnumerable<ACMaintenanceTracker.Models.ACUnit>
-
+@using static ACMaintenanceTracker.Controllers.HomeController
+@using static ACMaintenanceTracker.Controllers.ACUnitsController
+@using static ACMaintenanceTracker.Controllers.MaintenanceRecordsController
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     ViewData["Title"] = "AC Units";
 }

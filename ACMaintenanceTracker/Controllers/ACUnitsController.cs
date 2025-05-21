@@ -35,12 +35,13 @@ namespace ACMaintenanceTracker.Controllers
             var aCUnit = await _context.ACUnits
                 .Include(a => a.MaintenanceRecords)
                 .FirstOrDefaultAsync(m => m.Id == id);
+            var viewmodel = aCUnit;
             if (aCUnit == null)
             {
                 return NotFound();
             }
 
-            return View(aCUnit);
+            return View(viewmodel);
         }
 
         // GET: ACUnits/Create
@@ -52,15 +53,35 @@ namespace ACMaintenanceTracker.Controllers
         // POST: ACUnits/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ACIdentifier,FloorNumber,RoomNumber,Model,InstallationDate")] ACUnit aCUnit)
+        //public async Task<IActionResult> Create([Bind("Id,ACIdentifier,FloorNumber,RoomNumber,Model,InstallationDate")] ACUnit aCUnit)
+        //{
+        //    ModelState.Remove("MaintenanceRecords");
+        //    if (ModelState.IsValid)
+        //    {
+        //        _context.Add(aCUnit);
+        //        await _context.SaveChangesAsync();
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    return View(aCUnit);
+        //}
+        public async Task<IActionResult> Create(ACUnitCreateViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
+                var aCUnit = new ACUnit
+                {
+                    ACIdentifier = viewModel.ACIdentifier,
+                    FloorNumber = viewModel.FloorNumber,
+                    RoomNumber = viewModel.RoomNumber,
+                    Model = viewModel.Model,
+                    InstallationDate = viewModel.InstallationDate.ToUniversalTime()
+                };
+
                 _context.Add(aCUnit);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(aCUnit);
+            return View(viewModel);
         }
 
         // GET: ACUnits/Edit/5
