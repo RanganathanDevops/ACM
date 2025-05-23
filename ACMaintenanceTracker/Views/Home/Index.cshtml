@@ -6,9 +6,9 @@
     ViewData["Title"] = "AC Maintenance Tracker";
 }
 @model HomeViewModel
-@* @{
+@{
     Layout = "~/Views/Shared/_Layout.cshtml";
-} *@
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -90,11 +90,11 @@
                             <p>No recent maintenance records found.</p>
                         }
                     </div>
-                    <div class="card-footer">
+                    @* <div class="card-footer">
                         <a asp-controller="MaintenanceRecords" asp-action="Create" class="btn btn-success">
                             <i class="bi bi-plus-circle"></i> Add New Maintenance
                         </a>
-                    </div>
+                    </div> *@
                 </div>
             </div>
 
