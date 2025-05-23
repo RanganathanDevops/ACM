@@ -77,4 +77,28 @@ namespace ACMaintenanceTracker.Models
         public string Model { get; set; }
         public DateTime InstallationDate { get; set; }
     }
+
+    public class CreateMaintenanceRecord
+    {
+        public int Id { get; set; }
+
+        [Required]
+        public int ACUnitId { get; set; }
+
+        [Required]
+        public DateTime MaintenanceDate { get; set; }
+
+        [Required(ErrorMessage = "Please select a maintenance type")]
+        public string MaintenanceType { get; set; }
+
+        [Required(ErrorMessage = "Technician name is required")]
+        public string TechnicianName { get; set; }
+
+        public string Notes { get; set; } // Made optional
+
+        public DateTime? NextMaintenanceDate { get; set; }
+
+        // Navigation property - should not be validated
+        public ACUnit ACUnit { get; set; }
+    }
 }

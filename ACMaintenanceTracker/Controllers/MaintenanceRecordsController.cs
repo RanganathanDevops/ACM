@@ -32,19 +32,63 @@ namespace ACMaintenanceTracker.Controllers
         // POST: MaintenanceRecords/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ACUnitId,MaintenanceDate,MaintenanceType,TechnicianName,Notes,NextMaintenanceDate")] MaintenanceRecord maintenanceRecord)
+        //public async Task<IActionResult> Create([Bind("ACUnitId,MaintenanceDate,MaintenanceType,TechnicianName,Notes,NextMaintenanceDate")] MaintenanceRecord maintenanceRecord)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        _context.Add(maintenanceRecord);
+        //        await _context.SaveChangesAsync();
+        //        return RedirectToAction("Details", "ACUnits", new { id = maintenanceRecord.ACUnitId });
+        //    }
+        //    ViewData["ACUnitId"] = maintenanceRecord.ACUnitId;
+        //    ViewData["ACIdentifier"] = _context.ACUnits.Find(maintenanceRecord.ACUnitId)?.ACIdentifier;
+        //    return RedirectToAction("Details", "ACUnits", new { id = maintenanceRecord.ACUnitId });
+        //}
+        public async Task<IActionResult> Create([Bind("ACUnitId,MaintenanceDate,MaintenanceType,TechnicianName,Notes,NextMaintenanceDate")] CreateMaintenanceRecord maintenanceRecord)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(maintenanceRecord);
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Details", "ACUnits", new { id = maintenanceRecord.ACUnitId });
+                try
+                {
+                    _context.Add(maintenanceRecord);
+                    await _context.SaveChangesAsync();
+
+                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                    {
+                        return Json(new
+                        {
+                            success = true,
+                            redirectUrl = Url.Action("Details", "ACUnits", new { id = maintenanceRecord.ACUnitId })
+                        });
+                    }
+                    return RedirectToAction("Details", "ACUnits", new { id = maintenanceRecord.ACUnitId });
+                }
+                catch (Exception ex)
+                {
+                   
+
+                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                    {
+                        return StatusCode(500, new { error = "An error occurred while saving the record." });
+                    }
+
+                    ModelState.AddModelError("", "An error occurred while saving the record.");
+                }
             }
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                var errors = ModelState.ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                );
+                return BadRequest(new { success = false, errors });
+            }
+
             ViewData["ACUnitId"] = maintenanceRecord.ACUnitId;
             ViewData["ACIdentifier"] = _context.ACUnits.Find(maintenanceRecord.ACUnitId)?.ACIdentifier;
             return View(maintenanceRecord);
         }
-
         // GET: MaintenanceRecords/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {

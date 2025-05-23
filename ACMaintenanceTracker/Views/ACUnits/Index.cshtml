@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<ACMaintenanceTracker.Models.ACUnit>
+@using static ACMaintenanceTracker.Controllers.MaintenanceRecordsController
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     ViewData["Title"] = "AC Units Management";
@@ -27,6 +28,7 @@
             --info-color: #0dcaf0;
             --warning-color: #ffc107;
             --danger-color: #dc3545;
+            --success-color: #28a745;
         }
 
         body {
@@ -123,6 +125,16 @@
 
             .btn-outline-secondary:hover {
                 background-color: var(--secondary-color);
+                color: white;
+            }
+
+        .btn-outline-success {
+            color: var(--success-color);
+            border-color: var(--success-color);
+        }
+
+            .btn-outline-success:hover {
+                background-color: var(--success-color);
                 color: white;
             }
 
@@ -225,6 +237,9 @@
                                             <a asp-action="GenerateQRCode" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary" title="QR Code">
                                                 <i class="fas fa-qrcode"></i>
                                             </a>
+                                            <a asp-controller="MaintenanceRecords" asp-action="Create" asp-route-acUnitId="@item.Id" class="btn btn-sm btn-outline-success" title="Add Maintenance">
+                                                <i class="fas fa-plus-circle"></i>
+                                            </a>
                                         </div>
                                     </td>
                                 </tr>
@@ -268,7 +283,16 @@
                     }
                 },
                 columnDefs: [
-                    { orderable: false, targets: -1 }
+                    {
+                        orderable: false,
+                        targets: -1,
+                        render: function(data, type, row) {
+                            if (type === 'display') {
+                                return $('<div>').append(data).html();
+                            }
+                            return data;
+                        }
+                    }
                 ],
                 initComplete: function () {
                     $('.dataTables_length select').addClass('form-select form-select-sm');
