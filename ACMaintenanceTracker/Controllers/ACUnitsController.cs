@@ -53,17 +53,6 @@ namespace ACMaintenanceTracker.Controllers
         // POST: ACUnits/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Create([Bind("Id,ACIdentifier,FloorNumber,RoomNumber,Model,InstallationDate")] ACUnit aCUnit)
-        //{
-        //    ModelState.Remove("MaintenanceRecords");
-        //    if (ModelState.IsValid)
-        //    {
-        //        _context.Add(aCUnit);
-        //        await _context.SaveChangesAsync();
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    return View(aCUnit);
-        //}
         public async Task<IActionResult> Create(ACUnitCreateViewModel viewModel)
         {
             if (ModelState.IsValid)

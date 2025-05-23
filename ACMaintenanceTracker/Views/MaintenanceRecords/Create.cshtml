@@ -1,8 +1,10 @@
-﻿@model ACMaintenanceTracker.Models.MaintenanceRecord
+﻿@model ACMaintenanceTracker.Models.CreateMaintenanceRecord
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     ViewData["Title"] = "Create Maintenance Record";
     var acIdentifier = ViewData["ACIdentifier"] as string;
     var acUnitId = ViewData["ACUnitId"] as int?;
+    Layout = null;
 }
 
 <!DOCTYPE html>
@@ -11,350 +13,370 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
-
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- jQuery UI CSS for datepicker -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css">
-
+    <!-- jQuery UI CSS -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.min.css">
     <style>
         :root {
-            --primary-color: #3498db;
-            --secondary-color: #6c757d;
-            --success-color: #28a745;
-            --danger-color: #dc3545;
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
             --light-color: #f8f9fa;
-            --dark-color: #343a40;
+            --dark-color: #212529;
+            --success-color: #4cc9f0;
+            --danger-color: #f72585;
         }
 
         body {
-            background-color: #f5f7fa;
+            background-color: #f5f7fb;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--dark-color);
         }
 
-        .maintenance-form-container {
+        .form-container {
             max-width: 800px;
-            margin: 2rem auto;
-            padding: 0 15px;
-        }
-
-        .maintenance-form {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-            margin-bottom: 2rem;
+            margin: 3rem auto;
+            padding: 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background: white;
         }
 
         .form-header {
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid #e9ecef;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem;
+            text-align: center;
         }
 
-            .form-header h2 {
-                color: var(--dark-color);
-                font-weight: 600;
+            .form-header h1 {
+                font-weight: 700;
                 margin-bottom: 0.5rem;
             }
 
-            .form-header h4 {
-                color: var(--secondary-color);
-                font-weight: 400;
+            .form-header p {
+                opacity: 0.9;
+                margin-bottom: 0;
             }
+
+        .form-body {
+            padding: 2.5rem;
+        }
 
         .form-label {
-            font-weight: 500;
-            margin-bottom: 0.5rem;
+            font-weight: 600;
             color: var(--dark-color);
-            display: block;
+            margin-bottom: 0.5rem;
         }
 
-        .form-control {
-            padding: 0.5rem 0.75rem;
-            border-radius: 0.375rem;
-            border: 1px solid #ced4da;
-            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-            width: 100%;
+        .form-control, .form-select {
+            height: 50px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
         }
 
-            .form-control:focus {
-                border-color: var(--primary-color);
-                box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+            .form-control:focus, .form-select:focus {
+                border-color: var(--accent-color);
+                box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
             }
 
-        .btn {
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
-            font-weight: 500;
-            transition: all 0.2s ease-in-out;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+        textarea.form-control {
+            height: auto;
+            min-height: 120px;
         }
-
-            .btn i {
-                margin-right: 0.5rem;
-            }
 
         .btn-primary {
             background-color: var(--primary-color);
             border-color: var(--primary-color);
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
         }
 
             .btn-primary:hover {
-                background-color: #2c7cb6;
-                border-color: #2a75ad;
+                background-color: var(--secondary-color);
+                border-color: var(--secondary-color);
+                transform: translateY(-2px);
             }
 
-        .btn-secondary {
-            background-color: var(--secondary-color);
-            border-color: var(--secondary-color);
+        .btn-outline-secondary {
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
 
-            .btn-secondary:hover {
-                background-color: #5c636a;
-                border-color: #565e64;
+            .btn-outline-secondary:hover {
+                transform: translateY(-2px);
             }
 
-        .alert-danger {
-            color: var(--danger-color);
-            background-color: #f8d7da;
-            border-color: #f5c6cb;
-            padding: 0.75rem 1.25rem;
-            margin-bottom: 1rem;
-            border: 1px solid transparent;
-            border-radius: 0.25rem;
+        .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
         }
 
-        .text-danger {
+        .validation-summary-errors ul {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 1.5rem;
+        }
+
+        .validation-summary-errors li {
             color: var(--danger-color);
+            padding: 0.75rem 1rem;
+            background-color: rgba(247, 37, 133, 0.1);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
         }
 
         .field-validation-error {
+            color: var(--danger-color);
             font-size: 0.875rem;
             margin-top: 0.25rem;
             display: block;
         }
 
-        .input-validation-error {
-            border-color: var(--danger-color);
+        .input-group-text {
+            background-color: #f0f2f5;
+            border-color: #e0e0e0;
         }
 
-            .input-validation-error:focus {
-                border-color: var(--danger-color);
-                box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+        /* Animation classes */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .slide-up {
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
             }
 
+            to {
+                opacity: 1;
+            }
+        }
+
+        @@keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Datepicker styling */
         .ui-datepicker {
             background: white;
-            border: 1px solid #ddd;
-            border-radius: 0.375rem;
-            padding: 0.5rem;
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
-            z-index: 1000 !important;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+        }
+
+        .ui-datepicker-header {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px 6px 0 0;
         }
 
         .required-field::after {
             content: " *";
             color: var(--danger-color);
         }
+
+        @@media (max-width: 768px) {
+            .form-container {
+                margin: 1rem;
+                border-radius: 0;
+            }
+
+            .form-body {
+                padding: 1.5rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .btn-primary, .btn-outline-secondary {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="maintenance-form-container">
-        <div class="maintenance-form">
-            <div class="form-header">
-                <h2>@ViewData["Title"]</h2>
-                <h4><i class="fas fa-snowflake text-primary me-2"></i>AC Unit: @acIdentifier</h4>
-            </div>
+    <div class="form-container fade-in">
+        <div class="form-header slide-up">
+            <h1><i class="fas fa-tools me-2"></i>@ViewData["Title"]</h1>
+            <p><i class="fas fa-snowflake me-2"></i>For AC Unit: @acIdentifier</p>
+        </div>
 
-            <form id="maintenanceForm" asp-action="Create" method="post">
+        <div class="form-body">
+            <form asp-action="Create" id="maintenanceForm" class="slide-up" style="animation-delay: 0.1s">
                 @Html.AntiForgeryToken()
-                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                <div asp-validation-summary="ModelOnly" class="validation-summary-errors mb-4"></div>
 
                 <input type="hidden" asp-for="ACUnitId" value="@acUnitId" />
 
-                <div class="mb-3">
-                    <label asp-for="MaintenanceDate" class="form-label required-field">Maintenance Date</label>
-                    <input asp-for="MaintenanceDate" class="form-control datepicker" type="text" autocomplete="off" required />
-                    <span asp-validation-for="MaintenanceDate" class="text-danger field-validation-error"></span>
+                <div class="mb-4">
+                    <label asp-for="MaintenanceDate" class="form-label required-field">
+                        <i class="fas fa-calendar-alt me-2"></i>Maintenance Date
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-clock"></i></span>
+                        <input asp-for="MaintenanceDate" class="form-control datepicker" type="text" autocomplete="off" required />
+                    </div>
+                    <span asp-validation-for="MaintenanceDate" class="field-validation-error"></span>
                 </div>
 
-                <div class="mb-3">
-                    <label asp-for="MaintenanceType" class="form-label required-field">Maintenance Type</label>
-                    <select asp-for="MaintenanceType" class="form-control" required>
-                        <option value="">-- Select Maintenance Type --</option>
-                        <option value="Routine Check">Routine Check</option>
-                        <option value="Filter Replacement">Filter Replacement</option>
-                        <option value="Coil Cleaning">Coil Cleaning</option>
-                        <option value="Refrigerant Recharge">Refrigerant Recharge</option>
-                        <option value="Electrical Repair">Electrical Repair</option>
-                        <option value="Mechanical Repair">Mechanical Repair</option>
-                        <option value="Other">Other</option>
-                    </select>
-                    <span asp-validation-for="MaintenanceType" class="text-danger field-validation-error"></span>
+                <div class="mb-4">
+                    <label asp-for="MaintenanceType" class="form-label required-field">
+                        <i class="fas fa-tasks me-2"></i>Maintenance Type
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-list"></i></span>
+                        <select asp-for="MaintenanceType" class="form-select" required>
+                            <option value="">-- Select Maintenance Type --</option>
+                            <option value="Routine Check">Routine Check</option>
+                            <option value="Filter Replacement">Filter Replacement</option>
+                            <option value="Coil Cleaning">Coil Cleaning</option>
+                            <option value="Refrigerant Recharge">Refrigerant Recharge</option>
+                            <option value="Electrical Repair">Electrical Repair</option>
+                            <option value="Mechanical Repair">Mechanical Repair</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <span asp-validation-for="MaintenanceType" class="field-validation-error"></span>
                 </div>
 
-                <div class="mb-3">
-                    <label asp-for="TechnicianName" class="form-label required-field">Technician Name</label>
-                    <input asp-for="TechnicianName" class="form-control" required />
-                    <span asp-validation-for="TechnicianName" class="text-danger field-validation-error"></span>
+                <div class="mb-4">
+                    <label asp-for="TechnicianName" class="form-label required-field">
+                        <i class="fas fa-user-tie me-2"></i>Technician Name
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-id-badge"></i></span>
+                        <input asp-for="TechnicianName" class="form-control" required placeholder="John Smith" />
+                    </div>
+                    <span asp-validation-for="TechnicianName" class="field-validation-error"></span>
                 </div>
 
-                <div class="mb-3">
-                    <label asp-for="Notes" class="form-label">Notes</label>
-                    <textarea asp-for="Notes" class="form-control" rows="4"></textarea>
-                    <span asp-validation-for="Notes" class="text-danger field-validation-error"></span>
+                <div class="mb-4">
+                    <label asp-for="Notes" class="form-label">
+                        <i class="fas fa-clipboard me-2"></i>Notes
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-comment"></i></span>
+                        <textarea asp-for="Notes" class="form-control" rows="4" placeholder="Enter any additional details..."></textarea>
+                    </div>
+                    <span asp-validation-for="Notes" class="field-validation-error"></span>
                 </div>
 
-                <div class="mb-3">
-                    <label asp-for="NextMaintenanceDate" class="form-label">Next Maintenance Date</label>
-                    <input asp-for="NextMaintenanceDate" class="form-control datepicker" type="text" autocomplete="off" />
-                    <span asp-validation-for="NextMaintenanceDate" class="text-danger field-validation-error"></span>
+                <div class="mb-4">
+                    <label asp-for="NextMaintenanceDate" class="form-label">
+                        <i class="fas fa-calendar-check me-2"></i>Next Maintenance Date
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-forward"></i></span>
+                        <input asp-for="NextMaintenanceDate" class="form-control datepicker" type="text" autocomplete="off" placeholder="Optional" />
+                    </div>
+                    <span asp-validation-for="NextMaintenanceDate" class="field-validation-error"></span>
                 </div>
 
-                <div class="d-flex justify-content-between mt-4">
-                    <a href="@Url.Action("Details", "ACUnits", new { id = acUnitId })" class="btn btn-secondary">
-                        <i class="fas fa-arrow-left"></i> Back to Unit
+                <div class="action-buttons">
+                    <a href="@Url.Action("Details", "ACUnits", new { id = acUnitId })" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Unit
                     </a>
-                    <button type="submit" class="btn btn-primary" id="submitBtn">
-                        <i class="fas fa-save"></i> Create Record
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Create Record
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <!-- jQuery UI -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
-
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- jQuery UI -->
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
     <!-- jQuery Validation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/4.0.0/jquery.validate.unobtrusive.min.js"></script>
 
     <script>
-        $(document).ready(function() {
-            // Initialize datepicker for all elements with class 'datepicker'
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize datepickers
             $(".datepicker").datepicker({
                 dateFormat: "yy-mm-dd",
                 changeMonth: true,
                 changeYear: true,
-                showButtonPanel: true,
+                constrainInput: true,
                 beforeShow: function(input, inst) {
-                    inst.dpDiv.css({
-                        marginTop: -input.offsetHeight + "px",
-                        marginLeft: input.offsetWidth + "px"
-                    });
+                    try {
+                        var date = $.datepicker.parseDate("yy-mm-dd", $(input).val());
+                        return { defaultDate: date };
+                    } catch(e) {
+                        return { defaultDate: new Date() };
+                    }
                 }
             });
 
-            // Set today's date as default for MaintenanceDate
-            var today = new Date();
-            $("#MaintenanceDate").datepicker("setDate", today);
+            // Set default date for MaintenanceDate
+            $("#MaintenanceDate").datepicker("setDate", new Date());
 
-            // Form submission handler
-            $("#maintenanceForm").on("submit", function(e) {
-                e.preventDefault();
+            // Form submission handling
+            const form = document.getElementById('maintenanceForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const submitButton = form.querySelector('button[type="submit"]');
+                    if (submitButton) {
+                        submitButton.disabled = true;
+                        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+                    }
+                });
+            }
 
-                // Disable submit button to prevent double submission
-                $("#submitBtn").prop("disabled", true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+            // Add animation to form elements
+            const formGroups = document.querySelectorAll('.mb-4');
+            formGroups.forEach((group, index) => {
+                group.style.animation = `slideUp 0.5s ease-out ${0.2 + (index * 0.1)}s forwards`;
+                group.style.opacity = '0';
+            });
 
-                // Clear previous errors
-                $(".field-validation-error").text("");
-                $(".form-control").removeClass("is-invalid");
+            // Input focus effects
+            const inputs = document.querySelectorAll('.form-control, .form-select');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    const parent = this.closest('.input-group');
+                    if (parent) {
+                        parent.querySelector('.input-group-text').style.backgroundColor = '#e0e7ff';
+                    }
+                });
 
-                // Client-side validation
-                let isValid = true;
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-
-                // Validate required fields
-                if (!$("#MaintenanceType").val()) {
-                    $("#MaintenanceType").addClass("is-invalid");
-                    $("#MaintenanceType").next(".field-validation-error").text("Please select a maintenance type");
-                    isValid = false;
-                }
-
-                if (!$("#TechnicianName").val()) {
-                    $("#TechnicianName").addClass("is-invalid");
-                    $("#TechnicianName").next(".field-validation-error").text("Technician name is required");
-                    isValid = false;
-                }
-
-                // Validate MaintenanceDate
-                const maintenanceDate = $("#MaintenanceDate").datepicker("getDate");
-                if (!maintenanceDate) {
-                    $("#MaintenanceDate").addClass("is-invalid");
-                    $("#MaintenanceDate").next(".field-validation-error").text("Maintenance date is required");
-                    isValid = false;
-                } else if (maintenanceDate > today) {
-                    $("#MaintenanceDate").addClass("is-invalid");
-                    $("#MaintenanceDate").next(".field-validation-error").text("Date cannot be in the future");
-                    isValid = false;
-                }
-
-                // Validate NextMaintenanceDate if provided
-                const nextMaintenanceDate = $("#NextMaintenanceDate").datepicker("getDate");
-                if (nextMaintenanceDate && maintenanceDate && nextMaintenanceDate <= maintenanceDate) {
-                    $("#NextMaintenanceDate").addClass("is-invalid");
-                    $("#NextMaintenanceDate").next(".field-validation-error").text("Must be after maintenance date");
-                    isValid = false;
-                }
-
-                if (!isValid) {
-                    $("#submitBtn").prop("disabled", false).html('<i class="fas fa-save"></i> Create Record');
-                    return;
-                }
-
-                // Submit form via AJAX
-                $.ajax({
-                    url: $(this).attr("action"),
-                    type: "POST",
-                    data: $(this).serialize(),
-                    headers: {
-                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
-                    },
-                    success: function(response) {
-                        if (response.success && response.redirectUrl) {
-                            window.location.href = response.redirectUrl;
-                        } else if (response.errors) {
-                            // Display server-side validation errors
-                            $.each(response.errors, function(key, value) {
-                                if (value && value.length > 0) {
-                                    const $field = $("#" + key);
-                                    $field.addClass("is-invalid");
-                                    $field.next(".field-validation-error").text(value[0]);
-                                }
-                            });
-                        }
-                    },
-                    error: function(xhr) {
-                        if (xhr.status === 400 && xhr.responseJSON && xhr.responseJSON.errors) {
-                            // Display validation errors
-                            $.each(xhr.responseJSON.errors, function(key, value) {
-                                if (value && value.length > 0) {
-                                    const $field = $("#" + key);
-                                    $field.addClass("is-invalid");
-                                    $field.next(".field-validation-error").text(value[0]);
-                                }
-                            });
-                        } else {
-                            alert("An error occurred while saving the record. Please try again.");
-                        }
-                    },
-                    complete: function() {
-                        $("#submitBtn").prop("disabled", false).html('<i class="fas fa-save"></i> Create Record');
+                input.addEventListener('blur', function() {
+                    const parent = this.closest('.input-group');
+                    if (parent) {
+                        parent.querySelector('.input-group-text').style.backgroundColor = '#f0f2f5';
                     }
                 });
             });
