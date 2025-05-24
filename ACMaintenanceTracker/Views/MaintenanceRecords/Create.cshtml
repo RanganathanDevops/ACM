@@ -240,12 +240,12 @@
                 <input type="hidden" asp-for="ACUnitId" value="@acUnitId" />
 
                 <div class="mb-4">
-                    <label asp-for="MaintenanceDate" class="form-label required-field">
-                        <i class="fas fa-calendar-alt me-2"></i>Maintenance Date
+                    <label asp-for="MaintenanceDate" class="form-label">
+                        <i class="fas fa-calendar-check me-2"></i>Maintenance Date
                     </label>
                     <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-clock"></i></span>
-                        <input asp-for="MaintenanceDate" class="form-control datepicker" type="text" autocomplete="off" required />
+                        <span class="input-group-text"><i class="fas fa-forward"></i></span>
+                        <input asp-for="MaintenanceDate" class="form-control" type="date" id="maintenanceDate" />
                     </div>
                     <span asp-validation-for="MaintenanceDate" class="field-validation-error"></span>
                 </div>
@@ -298,7 +298,7 @@
                     </label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-forward"></i></span>
-                        <input asp-for="NextMaintenanceDate" class="form-control datepicker" type="text" autocomplete="off" placeholder="Optional" />
+                        <input asp-for="NextMaintenanceDate" class="form-control" type="date" id="nextMaintenanceDate" />
                     </div>
                     <span asp-validation-for="NextMaintenanceDate" class="field-validation-error"></span>
                 </div>
@@ -328,20 +328,10 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize datepickers
-            $(".datepicker").datepicker({
-                dateFormat: "yy-mm-dd",
-                changeMonth: true,
-                changeYear: true,
-                constrainInput: true,
-                beforeShow: function(input, inst) {
-                    try {
-                        var date = $.datepicker.parseDate("yy-mm-dd", $(input).val());
-                        return { defaultDate: date };
-                    } catch(e) {
-                        return { defaultDate: new Date() };
-                    }
-                }
-            });
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('maintenanceDate').value = today;
+
+            document.getElementById('nextMaintenanceDate').value = today;
 
             // Set default date for MaintenanceDate
             $("#MaintenanceDate").datepicker("setDate", new Date());

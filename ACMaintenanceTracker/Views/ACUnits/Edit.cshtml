@@ -179,13 +179,25 @@
                 </div>
             </div>
 
-            <div class="form-group mb-4">
+            @* <div class="form-group mb-4">
                 <label asp-for="InstallationDate" class="control-label">
                     <i class="fas fa-calendar-alt text-muted me-1"></i>Installation Date
                 </label>
                 <input asp-for="InstallationDate" class="form-control" type="date" />
                 <span asp-validation-for="InstallationDate" class="text-danger"></span>
+            </div> *@
+
+            <div class="mb-4">
+                <label asp-for="InstallationDate" class="form-label">
+                    <i class="fas fa-calendar-alt me-2"></i>Installation Date
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-clock"></i></span>
+                    <input asp-for="InstallationDate" class="form-control" type="date" id="installationDate" />
+                </div>
+                <span asp-validation-for="InstallationDate" class="field-validation-error"></span>
             </div>
+
 
             <div class="action-buttons">
                 <button type="submit" class="btn btn-primary">
@@ -211,18 +223,8 @@
     <script>
         $(document).ready(function() {
             // Format the date for the date input
-            function formatDate(date) {
-                if (!date) return '';
-                const d = new Date(date);
-                let month = '' + (d.getMonth() + 1);
-                let day = '' + d.getDate();
-                const year = d.getFullYear();
-
-                if (month.length < 2) month = '0' + month;
-                if (day.length < 2) day = '0' + day;
-
-                return [year, month, day].join('-');
-            }
+             const today = new Date().toISOString().split('T')[0];
+            document.getElementById('installationDate').value = today;
 
             // Set the formatted date in the date input
             const installationDate = '@Model.InstallationDate.ToString()';
