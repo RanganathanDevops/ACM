@@ -5,9 +5,12 @@
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     ViewData["Title"] = "AC Unit Details";
-    Layout = "_Layout"; // Ensure you have this if using a layout page
+    Layout = "_Layout"; // Ensure this matches your layout file
 }
 @model ACUnit
+
+<!-- First include Font Awesome in head -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
 <div class="container mt-4 ac-unit-details">
     <div class="row">
@@ -28,7 +31,7 @@
                         <dd class="col-sm-8">@Model.Model</dd>
 
                         <dt class="col-sm-4">Installed:</dt>
-                        <dd class="col-sm-8">@Model.InstallationDate.ToString()</dd>
+                        <dd class="col-sm-8">@Model.InstallationDate</dd>
 
                         <dt class="col-sm-4">Status:</dt>
                         <dd class="col-sm-8">
@@ -36,8 +39,12 @@
                         </dd>
                     </dl>
                     <div class="unit-actions mt-3">
-                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-primary">Edit</a>
-                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-primary me-2">
+                            <i class="fas fa-edit me-1"></i>Edit
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-trash-alt me-1"></i>Delete
+                        </a>
                     </div>
                 </div>
             </div>
@@ -48,7 +55,9 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <h4 class="mb-0">Maintenance History</h4>
                         <a asp-controller="MaintenanceRecords" asp-action="Create" asp-route-acUnitId="@Model.Id"
-                           class="btn btn-sm btn-light">Add Record</a>
+                           class="btn btn-sm btn-light">
+                            <i class="fas fa-plus me-1"></i>Add Record
+                        </a>
                     </div>
                 </div>
                 <div class="card-body">
@@ -57,16 +66,22 @@
                         <div class="maintenance-list list-group">
                             @foreach (var record in Model.MaintenanceRecords.OrderByDescending(r => r.MaintenanceDate))
                             {
-                                <div class="list-group-item maintenance-item" data-record-id="@record.Id">
+                                <div class="list-group-item maintenance-item">
                                     <div class="d-flex w-100 justify-content-between">
-                                        <h6 class="mb-1 maintenance-type">@record.MaintenanceType</h6>
-                                        <small class="text-muted maintenance-date">@record.MaintenanceDate.ToShortDateString()</small>
+                                        <h6 class="mb-1 maintenance-type">
+                                            <i class="fas fa-tools me-2"></i>@record.MaintenanceType
+                                        </h6>
+                                        <small class="text-muted maintenance-date">@record.MaintenanceDate.ToString("MMM dd, yyyy")</small>
                                     </div>
                                     <p class="mb-1 maintenance-notes">@record.Notes</p>
-                                    <small class="text-muted technician">Technician: @record.TechnicianName</small>
+                                    <small class="text-muted technician">
+                                        <i class="fas fa-user me-1"></i>Technician: @record.TechnicianName
+                                    </small>
                                     <div class="mt-2 record-actions">
                                         <a asp-controller="MaintenanceRecords" asp-action="Edit" asp-route-id="@record.Id"
-                                           class="btn btn-sm btn-outline-secondary">Edit</a>
+                                           class="btn btn-sm btn-outline-secondary">
+                                            <i class="fas fa-pencil-alt me-1"></i>Edit
+                                        </a>
                                     </div>
                                 </div>
                             }
@@ -74,7 +89,9 @@
                     }
                     else
                     {
-                        <div class="alert alert-info no-records">No maintenance records found.</div>
+                        <div class="alert alert-info no-records">
+                            <i class="fas fa-info-circle me-2"></i>No maintenance records found.
+                        </div>
                     }
                 </div>
             </div>
@@ -82,159 +99,128 @@
     </div>
 </div>
 
-@section Styles {
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
-    <style>
-        .ac-unit-details {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+<style>
+    /* Core Styles */
+    .ac-unit-details {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-        .unit-card, .maintenance-card {
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            margin-bottom: 25px;
-        }
+    /* Card Styles */
+    .unit-card, .maintenance-card {
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
 
-            .unit-card:hover, .maintenance-card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-            }
+    .card-header {
+        background-color: #4e73df !important;
+        border-radius: 8px 8px 0 0 !important;
+        padding: 15px 20px;
+    }
 
-        .card-header {
-            border-radius: 10px 10px 0 0 !important;
-            padding: 15px 20px;
-        }
-
-        .unit-details dt {
+        .card-header h4 {
             font-weight: 600;
-            color: #555;
+            margin: 0;
         }
 
-        .unit-details dd {
-            color: #333;
+    /* Unit Details Styles */
+    .unit-details dt {
+        font-weight: 600;
+        color: #6c757d;
+    }
+
+    .unit-details dd {
+        color: #212529;
+        margin-bottom: 8px;
+    }
+
+    /* Status Badge */
+    .status-badge {
+        font-size: 12px;
+        padding: 5px 10px;
+        border-radius: 20px;
+    }
+
+    /* Maintenance List Styles */
+    .maintenance-list {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .maintenance-item {
+        border-left: 4px solid #4e73df;
+        margin-bottom: 10px;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+    }
+
+        .maintenance-item:hover {
+            background-color: #f8f9fa;
+            transform: translateX(5px);
         }
 
-        .status-badge {
-            font-size: 0.85rem;
-            padding: 5px 10px;
+    .maintenance-type {
+        color: #4e73df;
+        font-weight: 600;
+    }
+
+    .maintenance-notes {
+        color: #495057;
+    }
+
+    /* Button Styles */
+    .btn-sm {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+
+    .btn-outline-primary {
+        border-color: #4e73df;
+        color: #4e73df;
+    }
+
+        .btn-outline-primary:hover {
+            background-color: #4e73df;
+            color: white;
         }
 
-        .maintenance-list {
-            max-height: 500px;
-            overflow-y: auto;
-            padding-right: 10px;
+    /* Responsive Adjustments */
+    @@media (max-width: 768px) {
+        .ac-unit-details .row > div {
+            margin-bottom: 20px;
         }
 
-        .maintenance-item {
-            border-left: 4px solid #4e73df;
-            margin-bottom: 12px;
-            border-radius: 8px;
+        .card-body {
             padding: 15px;
-            transition: all 0.3s ease;
         }
-
-            .maintenance-item:hover {
-                background-color: #f8f9fa;
-                transform: translateX(5px);
-            }
-
-        .maintenance-type {
-            color: #4e73df;
-            font-weight: 600;
-        }
-
-        .maintenance-notes {
-            color: #555;
-        }
-
-        .technician {
-            font-style: italic;
-        }
-
-        .record-actions {
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .maintenance-item:hover .record-actions {
-            opacity: 1;
-        }
-
-        .no-records {
-            border-radius: 8px;
-            text-align: center;
-            padding: 20px;
-        }
-
-        @@media (max-width: 768px) {
-            .ac-unit-details .row > div {
-                margin-bottom: 20px;
-            }
-        }
-    </style>
-}
+    }
+</style>
 
 @section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Add animation to cards when they come into view
-            const cards = document.querySelectorAll('.unit-card, .maintenance-card');
-            cards.forEach(card => {
-                card.classList.add('animate__animated', 'animate__fadeInUp');
+        document.addEventListener('DOMContentLoaded', function() {
+            // Simple animation for cards
+            const cards = document.querySelectorAll('.card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'all 0.5s ease';
+
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100 * index);
             });
 
-            // Add click effect to maintenance items
-            const maintenanceItems = document.querySelectorAll('.maintenance-item');
-            maintenanceItems.forEach(item => {
-                item.addEventListener('click', function (e) {
-                    // Don't trigger if clicking on a link inside the item
-                    if (e.target.tagName !== 'A' && !e.target.closest('a')) {
-                        this.classList.toggle('active');
-                    }
-                });
-            });
-
-            // Initialize a simple chart if needed (example)
-            const ctx = document.createElement('canvas');
-            ctx.id = 'maintenanceChart';
-            document.querySelector('.unit-card .card-body').appendChild(ctx);
-
-            if (typeof Chart !== 'undefined') {
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                        datasets: [{
-                            label: 'Maintenance Events',
-                            data: [12, 19, 3, 5, 2, 3],
-                            backgroundColor: 'rgba(78, 115, 223, 0.5)',
-                            borderColor: 'rgba(78, 115, 223, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
-                        }
-                    }
-                });
-            }
-
-            // Add confirmation for delete button
-            const deleteBtn = document.querySelector('.btn-outline-danger');
-            if (deleteBtn) {
-                deleteBtn.addEventListener('click', function (e) {
-                    if (!confirm('Are you sure you want to delete this AC unit? All maintenance records will also be deleted.')) {
+            // Delete confirmation
+            document.querySelectorAll('.btn-outline-danger').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    if (!confirm('Are you sure you want to delete this?')) {
                         e.preventDefault();
                     }
                 });
-            }
+            });
         });
     </script>
 }
