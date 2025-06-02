@@ -1,0 +1,342 @@
+﻿@model ACMaintenanceTracker.Models.Equipment
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Delete Equipment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --danger-color: #f72585;
+            --warning-color: #f8961e;
+            --dark-color: #212529;
+            --light-color: #f8f9fa;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .delete-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .delete-card {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+
+        .delete-header {
+            background: linear-gradient(135deg, var(--danger-color), #b5179e);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+            .delete-header h1 {
+                font-weight: 700;
+                margin-bottom: 0.5rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+                .delete-header h1 i {
+                    margin-right: 10px;
+                }
+
+            .delete-header p {
+                opacity: 0.9;
+                margin-bottom: 0;
+            }
+
+        .delete-body {
+            padding: 2rem;
+            background-color: white;
+        }
+
+        .alert-danger {
+            background-color: rgba(247, 37, 133, 0.1);
+            border: 2px solid var(--danger-color);
+            color: var(--dark-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+            .alert-danger h4 {
+                color: var(--danger-color);
+                font-weight: 700;
+                display: flex;
+                align-items: center;
+            }
+
+                .alert-danger h4 i {
+                    margin-right: 10px;
+                }
+
+        .equipment-details {
+            margin: 1.5rem 0;
+        }
+
+        dl.row {
+            margin: 0;
+        }
+
+        dt.col-sm-4 {
+            font-weight: 600;
+            color: var(--dark-color);
+            padding: 0.75rem 0;
+            display: flex;
+            align-items: center;
+        }
+
+            dt.col-sm-4 i {
+                margin-right: 10px;
+                width: 20px;
+                color: var(--primary-color);
+            }
+
+        dd.col-sm-8 {
+            padding: 0.75rem 0;
+            color: #495057;
+        }
+
+        .delete-footer {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .btn-delete {
+            background-color: var(--danger-color);
+            border-color: var(--danger-color);
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+            .btn-delete:hover {
+                background-color: #b5179e;
+                border-color: #b5179e;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(247, 37, 133, 0.3);
+            }
+
+        .btn-cancel {
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+            .btn-cancel:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @@keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @@media (max-width: 768px) {
+            .delete-container {
+                margin: 1rem;
+            }
+
+            .delete-footer {
+                flex-direction: column;
+            }
+
+            .btn-delete, .btn-cancel {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+
+            dl.row {
+                display: flex;
+                flex-direction: column;
+            }
+
+            dt.col-sm-4, dd.col-sm-8 {
+                width: 100%;
+                padding: 0.5rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container delete-container">
+        <div class="card delete-card animate__animated animate__fadeIn">
+            <div class="delete-header">
+                <h1><i class="fas fa-exclamation-triangle"></i>Delete Equipment</h1>
+                <p>This action is permanent and cannot be undone</p>
+            </div>
+
+            <div class="delete-body">
+                <div class="alert alert-danger animate__animated animate__headShake">
+                    <h4><i class="fas fa-radiation"></i>Warning: Critical Action</h4>
+                    <p>You are about to permanently delete this equipment record and all associated maintenance history. This action cannot be recovered.</p>
+                </div>
+
+                <div class="equipment-details">
+                    <h5 class="mb-4"><i class="fas fa-info-circle text-primary me-2"></i>Equipment Details</h5>
+                    <dl class="row">
+                        <dt class="col-sm-4"><i class="fas fa-id-card-alt"></i>Equipment ID</dt>
+                        <dd class="col-sm-8">@Model.EquipmentIdentifier</dd>
+
+                        <dt class="col-sm-4"><i class="fas fa-tag"></i>Type</dt>
+                        <dd class="col-sm-8">@Model.EquipmentType</dd>
+
+                        <dt class="col-sm-4"><i class="fas fa-map-marker-alt"></i>Location</dt>
+                        <dd class="col-sm-8">@Model.Location</dd>
+
+                        <dt class="col-sm-4"><i class="fas fa-info-circle"></i>Model</dt>
+                        <dd class="col-sm-8">@Model.Model</dd>
+
+                        <dt class="col-sm-4"><i class="fas fa-industry"></i>Manufacturer</dt>
+                        <dd class="col-sm-8">@Model.Manufacturer</dd>
+
+                        <dt class="col-sm-4"><i class="fas fa-calendar-alt"></i>Installation Date</dt>
+                        <dd class="col-sm-8">@Model.InstallationDate?.ToString("d")</dd>
+                    </dl>
+                </div>
+
+                <div class="delete-footer">
+                    <form asp-action="Delete" id="deleteForm">
+                        <input type="hidden" asp-for="Id" />
+                        <button type="submit" class="btn btn-delete pulse-animation" id="deleteBtn">
+                            <i class="fas fa-trash-alt me-2"></i>Confirm Delete
+                        </button>
+                        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary btn-cancel">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Enhanced confirmation dialog
+            $('#deleteForm').on('submit', function (e) {
+                e.preventDefault();
+
+                Swal.fire({
+                    title: 'Are you absolutely sure?',
+                    html: `<div class="text-start">
+                            <p>You are about to permanently delete:</p>
+                            <ul>
+                                <li><strong>Equipment:</strong> ${$('#EquipmentIdentifier').text()}</li>
+                                <li><strong>Type:</strong> ${$('#EquipmentType').text()}</li>
+                                <li><strong>All associated maintenance records</strong></li>
+                            </ul>
+                            <p class="text-danger fw-bold">This action cannot be undone!</p>
+                          </div>`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#f72585',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'Cancel',
+                    focusCancel: true,
+                    backdrop: `
+                        rgba(247,37,133,0.4)
+                        url("/images/trash-animation.gif")
+                        center top
+                        no-repeat
+                    `
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Show loading state
+                        const deleteBtn = $('#deleteBtn');
+                        deleteBtn.html('<i class="fas fa-spinner fa-spin me-2"></i> Deleting...');
+                        deleteBtn.prop('disabled', true);
+
+                        // Submit the form
+                        setTimeout(() => {
+                            e.target.submit();
+                        }, 1000);
+                    }
+                });
+            });
+
+            // Add animation to delete button on hover
+            $('#deleteBtn').hover(
+                function () {
+                    $(this).css('transform', 'scale(1.05)');
+                },
+                function () {
+                    $(this).css('transform', 'scale(1)');
+                }
+            );
+
+            // Add shake animation to alert on page load
+            setTimeout(() => {
+                $('.alert-danger').addClass('animate__animated animate__headShake');
+            }, 500);
+        });
+    </script>
+</body>
+</html>

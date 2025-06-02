@@ -1,4 +1,4 @@
-﻿@model ACMaintenanceTracker.Models.MaintenanceRecord
+﻿@* @model ACMaintenanceTracker.Models.MaintenanceRecord
 @{
     ViewData["Title"] = "Edit Maintenance Record";
     var acIdentifier = ViewData["ACIdentifier"] as string;
@@ -233,4 +233,4 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-}
+} *@

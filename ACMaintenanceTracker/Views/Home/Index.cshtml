@@ -1,14 +1,14 @@
-﻿@using static ACMaintenanceTracker.Controllers.HomeController
-@using static ACMaintenanceTracker.Controllers.ACUnitsController
+﻿@using ACMaintenanceTracker.Models
+@using static ACMaintenanceTracker.Controllers.HomeController
+@using static ACMaintenanceTracker.Controllers.EquipmentController
 @using static ACMaintenanceTracker.Controllers.MaintenanceRecordsController
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
-    ViewData["Title"] = "AC Maintenance Tracker";
-}
-@model HomeViewModel
-@{
+    ViewData["Title"] = "Facility Maintenance Dashboard";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+@model HomeViewModel
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,159 +17,411 @@
     <title>@ViewData["Title"]</title>
 
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Custom CSS -->
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
     <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --success-color: #4cc9f0;
+            --danger-color: #f72585;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+        }
+
         body {
-            padding-top: 2rem;
-            background-color: #f8f9fa;
+            background-color: #f5f7fb;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--dark-color);
         }
 
-        .card {
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 4px 20px rgba(67, 97, 238, 0.15);
+        }
+
+        .stat-card {
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
             margin-bottom: 1.5rem;
+            background: white;
         }
 
-        .card-header {
-            font-weight: 600;
+            .stat-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+            }
+
+        .stat-card-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            background-color: white;
+        }
+
+        .stat-card-body {
+            padding: 1.5rem;
+        }
+
+        .stat-card-footer {
+            padding: 1rem 1.5rem;
+            background-color: rgba(0, 0, 0, 0.03);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: #6c757d;
+            margin-bottom: 0;
         }
 
         .list-group-item {
+            border-left: 4px solid transparent;
+            transition: all 0.3s ease;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 1rem 1.25rem;
         }
+
+            .list-group-item:hover {
+                border-left-color: var(--primary-color);
+                background-color: rgba(67, 97, 238, 0.05);
+            }
 
         .badge {
-            font-size: 0.85em;
+            font-weight: 600;
+            padding: 0.5em 0.8em;
+            border-radius: 50px;
         }
 
-        .display-4 {
-            margin-bottom: 1rem;
-            color: #2c3e50;
+        .overdue-badge {
+            background-color: var(--danger-color);
+            color: white;
         }
 
-        .lead {
-            color: #7f8c8d;
-            margin-bottom: 2rem;
+        .due-soon-badge {
+            background-color: var(--warning-color);
+            color: #212529;
+        }
+
+        .maintenance-type-badge {
+            background-color: var(--info-color);
+            color: white;
+        }
+
+        .action-btn {
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .action-btn i {
+                margin-right: 0.5rem;
+            }
+
+            .action-btn:hover {
+                transform: translateY(-2px);
+            }
+
+        .animate-delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .animate-delay-2 {
+            animation-delay: 0.2s;
+        }
+
+        .animate-delay-3 {
+            animation-delay: 0.3s;
+        }
+
+        /* Custom scrollbar for maintenance lists */
+        .maintenance-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+            .maintenance-list::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .maintenance-list::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 10px;
+            }
+
+            .maintenance-list::-webkit-scrollbar-thumb {
+                background: var(--primary-color);
+                border-radius: 10px;
+            }
+
+                .maintenance-list::-webkit-scrollbar-thumb:hover {
+                    background: var(--secondary-color);
+                }
+
+        /* Responsive adjustments */
+        @@media (max-width: 768px) {
+            .dashboard-header {
+                padding: 1.5rem 0;
+                border-radius: 0;
+            }
+
+            .stat-card {
+                margin-bottom: 1rem;
+            }
+
+            .action-btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="text-center">
-            <h1 class="display-4">AC Maintenance Tracker</h1>
-            <p class="lead">Track and manage all your air conditioning unit maintenance records</p>
-        </div>
-
-        <div class="row mt-5">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        <h5>Recent Maintenance</h5>
-                    </div>
-                    <div class="card-body">
-                        @if (Model.RecentMaintenance.Count > 0)
-                        {
-                            <ul class="list-group">
-                                @foreach (var record in Model.RecentMaintenance)
-                                {
-                                    <li class="list-group-item">
-                                        <strong>@record.ACUnit.ACIdentifier</strong> - @record.MaintenanceDate.ToShortDateString()
-                                        <span class="badge bg-info float-end">@record.MaintenanceType</span>
-                                    </li>
-                                }
-                            </ul>
-                        }
-                        else
-                        {
-                            <p>No recent maintenance records found.</p>
-                        }
-                    </div>
-                    @* <div class="card-footer">
-                        <a asp-controller="MaintenanceRecords" asp-action="Create" class="btn btn-success">
-                            <i class="bi bi-plus-circle"></i> Add New Maintenance
-                        </a>
-                    </div> *@
+    <div class="dashboard-header animate__animated animate__fadeIn">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="display-4 mb-3 animate__animated animate__fadeInLeft">
+                        <i class="fas fa-tools me-3"></i>Facility Maintenance Dashboard
+                    </h1>
+                    <p class="lead mb-0 animate__animated animate__fadeInLeft animate__delay-1s">
+                        Comprehensive tracking for all facility maintenance activities
+                    </p>
                 </div>
-            </div>
-
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header bg-warning">
-                        <h5>Due for Maintenance</h5>
-                    </div>
-                    <div class="card-body">
-                        @if (Model.DueForMaintenance.Count > 0)
-                        {
-                            <ul class="list-group">
-                                @foreach (var unit in Model.DueForMaintenance)
-                                {
-                                    var latestMaintenance = unit.MaintenanceRecords
-                                    .OrderByDescending(m => m.MaintenanceDate)
-                                    .FirstOrDefault();
-                                    <li class="list-group-item">
-                                        <strong>@unit.ACIdentifier</strong>
-                                        @if (latestMaintenance?.NextMaintenanceDate.HasValue == true)
-                                        {
-                                            var days = (latestMaintenance.NextMaintenanceDate.Value - DateTime.Today).Days;
-                                            <span class="float-end @(days < 0 ? "text-danger fw-bold" : "text-warning")">
-                                                @if (days < 0)
-                                                {
-                                                    <i class="bi bi-exclamation-triangle-fill"></i> 
-                                                    @($"OVERDUE by {-days} days")
-                                                }
-                                                else
-                                                {
-                                                    <i class="bi bi-clock"></i> 
-                                                    @($"Due in {days} days")
-                                                }
-                                            </span>
-                                        }
-                                    </li>
-                                }
-                            </ul>
-                        }
-                        else
-                        {
-                            <p>No AC units due for maintenance soon.</p>
-                        }
-                    </div>
-                    <div class="card-footer">
-                        <a asp-controller="ACUnits" asp-action="Index" class="btn btn-primary">
-                            <i class="bi bi-list-ul"></i> View All AC Units
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row mt-4">
-            <div class="col-12">
-                <div class="d-grid gap-2">
-                    <a asp-controller="ACUnits" asp-action="Create" class="btn btn-lg btn-outline-primary">
-                        <i class="bi bi-plus-circle-fill"></i> Add New AC Unit
+                <div class="col-md-4 text-md-end animate__animated animate__fadeInRight animate__delay-1s">
+                    <a asp-controller="Equipment" asp-action="Create" class="btn btn-light btn-lg action-btn">
+                        <i class="fas fa-plus-circle"></i> Add New Equipment
                     </a>
                 </div>
             </div>
         </div>
     </div>
 
+    <div class="container">
+        <div class="row mb-4">
+            <!-- Equipment Summary Card -->
+            <div class="col-md-4 animate__animated animate__fadeInUp">
+                <div class="stat-card h-100">
+                    <div class="stat-card-header">
+                        <h5 class="mb-0"><i class="fas fa-cog me-2"></i>Equipment Summary</h5>
+                    </div>
+                    <div class="stat-card-body text-center">
+                        <i class="fas fa-building stat-icon"></i>
+                        <div class="stat-value">@Model.EquipmentCounts.Values.Sum()</div>
+                        <p class="stat-label">Total Equipment Items</p>
+                    </div>
+                    <div class="stat-card-footer text-center">
+                        <a asp-controller="Equipment" asp-action="Index" class="btn btn-outline-primary btn-sm">
+                            View All Equipment
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Maintenance Card -->
+            <div class="col-md-4 animate__animated animate__fadeInUp animate-delay-1">
+                <div class="stat-card h-100">
+                    <div class="stat-card-header">
+                        <h5 class="mb-0"><i class="fas fa-clock-rotate-left me-2"></i>Recent Maintenance</h5>
+                    </div>
+                    <div class="stat-card-body">
+                        @if (Model.RecentMaintenance.Count > 0)
+                        {
+                            <div class="maintenance-list">
+                                @foreach (var record in Model.RecentMaintenance)
+                                {
+                                    <div class="list-group-item">
+                                        <div>
+                                            <strong>@record.Equipment.EquipmentIdentifier</strong>
+                                            <small class="text-muted d-block">@record.Equipment.EquipmentType</small>
+                                        </div>
+                                        <span class="badge maintenance-type-badge">@record.MaintenanceType</span>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-info mb-0">
+                                <i class="fas fa-info-circle me-2"></i>No recent maintenance records.
+                            </div>
+                        }
+                    </div>
+                    <div class="stat-card-footer">
+                        <a asp-controller="MaintenanceRecords" asp-action="Create" class="btn btn-primary btn-sm action-btn">
+                            <i class="fas fa-plus"></i> Add Maintenance
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Due for Maintenance Card -->
+            <div class="col-md-4 animate__animated animate__fadeInUp animate-delay-2">
+                <div class="stat-card h-100">
+                    <div class="stat-card-header">
+                        <h5 class="mb-0"><i class="fas fa-calendar-exclamation me-2"></i>Due for Maintenance</h5>
+                    </div>
+                    <div class="stat-card-body">
+                        @if (Model.DueForMaintenance.Count > 0)
+                        {
+                            <div class="maintenance-list">
+                                @foreach (var equipment in Model.DueForMaintenance)
+                                {
+                                    var latestMaintenance = equipment.MaintenanceRecords
+                                    .OrderByDescending(m => m.MaintenanceDate)
+                                    .FirstOrDefault();
+
+                                    <div class="list-group-item">
+                                        <div>
+                                            <strong>@equipment.EquipmentIdentifier</strong>
+                                            <small class="text-muted d-block">@equipment.EquipmentType</small>
+                                        </div>
+                                        @if (latestMaintenance?.NextMaintenanceDate.HasValue == true)
+                                        {
+                                            var days = (latestMaintenance.NextMaintenanceDate.Value - DateTime.Today).Days;
+                                            if (days < 0)
+                                            {
+                                                <span class="badge overdue-badge">
+                                                    <i class="fas fa-exclamation-triangle me-1"></i>
+                                                    @($"{-days}d overdue")
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge due-soon-badge">
+                                                    <i class="fas fa-clock me-1"></i>
+                                                    @($"Due in {days}d")
+                                                </span>
+                                            }
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-success mb-0">
+                                <i class="fas fa-check-circle me-2"></i>All equipment is up to date.
+                            </div>
+                        }
+                    </div>
+                    <div class="stat-card-footer">
+                        <a asp-controller="Equipment" asp-action="Index" class="btn btn-warning btn-sm action-btn">
+                            <i class="fas fa-list"></i> View All
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Equipment Type Cards -->
+        <h3 class="mb-4 animate__animated animate__fadeIn animate-delay-1"><i class="fas fa-folder-open me-2"></i>Equipment Categories</h3>
+        <div class="row animate__animated animate__fadeIn animate-delay-2">
+            @foreach (var equipmentType in Enum.GetValues(typeof(EquipmentType)))
+            {
+                var type = (EquipmentType)equipmentType;
+                var count = Model.EquipmentCounts.ContainsKey(type) ? Model.EquipmentCounts[type] : 0;
+                var icon = GetIconForEquipmentType(type);
+                var color = GetColorForEquipmentType(type);
+
+                <div class="col-md-3 col-6 mb-4">
+                    <div class="stat-card h-100">
+                        <div class="stat-card-body text-center">
+                            <i class="fas @icon fa-3x mb-3" style="color: var(--@color-color)"></i>
+                            <h5 class="stat-label">@type</h5>
+                            <div class="stat-value">@count</div>
+                        </div>
+                        <div class="stat-card-footer text-center">
+                            <a asp-controller="Equipment" asp-action="Index" asp-route-type="@type"
+                               class="btn btn-outline-secondary btn-sm">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row mt-4 animate__animated animate__fadeIn animate-delay-3">
+            <div class="col-12">
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                    </div>
+                    <div class="stat-card-body">
+                        <div class="row">
+                            <div class="col-md-3 col-6 mb-3">
+                                <a asp-controller="Equipment" asp-action="Create" class="btn btn-primary action-btn w-100">
+                                    <i class="fas fa-plus"></i> Add Equipment
+                                </a>
+                            </div>
+                            <div class="col-md-3 col-6 mb-3">
+                                <a asp-controller="MaintenanceRecords" asp-action="Create" class="btn btn-success action-btn w-100">
+                                    <i class="fas fa-tools"></i> Log Maintenance
+                                </a>
+                            </div>
+                            <div class="col-md-3 col-6 mb-3">
+                                <a asp-controller="Reports" asp-action="Index" class="btn btn-info action-btn w-100">
+                                    <i class="fas fa-chart-bar"></i> View Reports
+                                </a>
+                            </div>
+                            <div class="col-md-3 col-6 mb-3">
+                                <a asp-controller="Settings" asp-action="Index" class="btn btn-secondary action-btn w-100">
+                                    <i class="fas fa-cog"></i> Settings
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <!-- Bootstrap JS Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- Custom JavaScript -->
     <script>
         $(document).ready(function() {
             // Add animation to cards on hover
-            $('.card').hover(
+            $('.stat-card').hover(
                 function() {
                     $(this).css('transform', 'translateY(-5px)');
                 },
@@ -178,14 +430,79 @@
                 }
             );
 
-            // Add confirmation for important actions
+            // Initialize tooltips
+            $('[data-bs-toggle="tooltip"]').tooltip();
+
+            // Smooth scroll for maintenance lists
+            $('.maintenance-list').on('scroll', function() {
+                $(this).addClass('scrolling');
+                clearTimeout($.data(this, 'scrollTimer'));
+                $.data(this, 'scrollTimer', setTimeout(function() {
+                    $(this).removeClass('scrolling');
+                }, 250));
+            });
+
+            // Animate elements when they come into view
+            function animateOnScroll() {
+                $('.animate__animated').each(function() {
+                    const elementTop = $(this).offset().top;
+                    const elementBottom = elementTop + $(this).outerHeight();
+                    const viewportTop = $(window).scrollTop();
+                    const viewportBottom = viewportTop + $(window).height();
+
+                    if (elementBottom > viewportTop && elementTop < viewportBottom) {
+                        $(this).addClass($(this).data('animate'));
+                    }
+                });
+            }
+
+            // Run once on page load
+            animateOnScroll();
+
+            // Run on scroll
+            $(window).on('scroll', function() {
+                animateOnScroll();
+            });
+
+            // Add confirmation for delete actions
             $('.btn-danger').click(function() {
                 return confirm('Are you sure you want to perform this action?');
             });
-
-            // Tooltip initialization
-            $('[data-bs-toggle="tooltip"]').tooltip();
         });
     </script>
 </body>
 </html>
+
+@functions {
+    string GetIconForEquipmentType(EquipmentType type)
+    {
+        return type switch
+        {
+            EquipmentType.Transformer => "fa-bolt",
+            EquipmentType.Generator => "fa-gas-pump",
+            EquipmentType.WaterPlant => "fa-tint",
+            EquipmentType.ROPlant => "fa-filter",
+            EquipmentType.STPlant => "fa-recycle",
+            EquipmentType.FireSystem => "fa-fire-extinguisher",
+            EquipmentType.ACIndoorUnit => "fa-snowflake",
+            EquipmentType.ACOutdoorUnit => "fa-fan",
+            _ => "fa-cog"
+        };
+    }
+
+    string GetColorForEquipmentType(EquipmentType type)
+    {
+        return type switch
+        {
+            EquipmentType.Transformer => "primary",
+            EquipmentType.Generator => "secondary",
+            EquipmentType.WaterPlant => "info",
+            EquipmentType.ROPlant => "success",
+            EquipmentType.STPlant => "dark",
+            EquipmentType.FireSystem => "danger",
+            EquipmentType.ACIndoorUnit => "light",
+            EquipmentType.ACOutdoorUnit => "warning",
+            _ => "primary"
+        };
+    }
+}

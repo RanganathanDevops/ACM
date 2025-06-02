@@ -1,0 +1,469 @@
+﻿@model ACMaintenanceTracker.Models.EquipmentCreateViewModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Create New Equipment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* Modern Color Scheme */
+    :root {
+        --primary: #4361ee;
+        --primary-dark: #3a0ca3;
+        --secondary: #4895ef;
+        --accent: #4cc9f0;
+        --light: #f8f9fa;
+        --dark: #212529;
+        --success: #4bb543;
+        --error: #ff3333;
+        --warning: #ffbe0b;
+    }
+
+    /* Base Styles */
+    .form-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2.5rem;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+        /* Decorative Elements */
+        .form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+        position: relative;
+    }
+
+        .form-header h1 {
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--primary-dark);
+            font-size: 2rem;
+            position: relative;
+            display: inline-block;
+        }
+
+            .form-header h1::after {
+                content: '';
+                position: absolute;
+                bottom: -8px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 60px;
+                height: 3px;
+                background: var(--accent);
+                border-radius: 3px;
+            }
+
+        .form-header p {
+            color: #6c757d;
+            font-size: 1.1rem;
+            margin-top: 1rem;
+        }
+
+    /* Form Elements */
+    .form-group {
+        margin-bottom: 1.75rem;
+        position: relative;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+
+        .form-label i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+            color: var(--primary);
+        }
+
+    .form-control, .form-select {
+        border-radius: 10px;
+        padding: 0.85rem 1.25rem;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+        box-shadow: none !important;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.15) !important;
+        }
+
+    .input-group-text {
+        background-color: #f8f9fa;
+        border: 2px solid #e9ecef;
+        color: var(--dark);
+        font-size: 1rem;
+    }
+
+    /* Validation Styles */
+    .validation-summary-errors {
+        color: var(--error);
+        background-color: #fff5f5;
+        padding: 1.25rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+        border-left: 4px solid var(--error);
+    }
+
+    .field-validation-error {
+        color: var(--error);
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        display: block;
+        font-weight: 500;
+    }
+
+    .input-validation-error {
+        border-color: var(--error) !important;
+    }
+
+    /* Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2.5rem;
+        justify-content: flex-end;
+    }
+
+    .btn {
+        padding: 0.85rem 1.75rem;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        border: 2px solid transparent;
+    }
+
+    .btn-primary {
+        background-color: var(--primary);
+        border-color: var(--primary);
+    }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.25);
+        }
+
+    .btn-outline-secondary {
+        border-color: #e9ecef;
+        color: var(--dark);
+        background-color: white;
+    }
+
+        .btn-outline-secondary:hover {
+            background-color: #f8f9fa;
+            border-color: #dee2e6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+    /* Animations */
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @@keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.05);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    /* Form Loading State */
+    .processing {
+        animation: pulse 1.5s infinite;
+        position: relative;
+    }
+
+        .processing::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+        }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .form-container {
+            padding: 1.75rem;
+            margin: 1rem;
+            border-radius: 12px;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            width: 100%;
+        }
+    }
+
+    /* Floating Label Effect */
+    .floating-label-group {
+        position: relative;
+        margin-bottom: 1.75rem;
+    }
+
+    .floating-label {
+        position: absolute;
+        top: 1rem;
+        left: 1.25rem;
+        color: #6c757d;
+        transition: all 0.2s ease;
+        pointer-events: none;
+        background: white;
+        padding: 0 0.5rem;
+        transform-origin: left center;
+    }
+
+    .form-control:focus ~ .floating-label,
+    .form-control:not(:placeholder-shown) ~ .floating-label,
+    .form-select:focus ~ .floating-label,
+    .form-select:not([value=""]) ~ .floating-label {
+        transform: translateY(-1.75rem) scale(0.85);
+        color: var(--primary);
+        font-weight: 600;
+    }
+
+    /* Special styling for select elements */
+    .form-select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%234361ee' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 16px 12px;
+    }
+</style>
+
+<div class="form-container animate__animated animate__fadeIn">
+    <div class="form-header">
+        <h1><i class="fas fa-cog me-2"></i>Create New Equipment</h1>
+        <p>Add new equipment to the maintenance tracking system</p>
+    </div>
+
+    <div class="form-body">
+        <form asp-action="Create" id="equipmentForm" class="needs-validation" novalidate>
+            <div asp-validation-summary="ModelOnly" class="validation-summary-errors mb-4"></div>
+
+            <div class="floating-label-group">
+                <input asp-for="EquipmentIdentifier" class="form-control" placeholder=" " required />
+                <label class="floating-label"><i class="fas fa-id-card-alt me-1"></i> Equipment Identifier</label>
+                <span asp-validation-for="EquipmentIdentifier" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="EquipmentType" class="form-label">
+                    <i class="fas fa-tag"></i> Equipment Type
+                </label>
+                <select asp-for="EquipmentType" class="form-select" required>
+                    <option value="">-- Select Equipment Type --</option>
+                    @foreach (var item in Html.GetEnumSelectList<ACMaintenanceTracker.Models.EquipmentType>())
+                    {
+                        <option value="@item.Value">@item.Text</option>
+                    }
+                </select>
+                <span asp-validation-for="EquipmentType" class="field-validation-error"></span>
+            </div>
+
+            <div class="floating-label-group">
+                <input asp-for="Location" class="form-control" placeholder=" " required />
+                <label class="floating-label"><i class="fas fa-map-marker-alt me-1"></i> Location</label>
+                <span asp-validation-for="Location" class="field-validation-error"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 floating-label-group">
+                    <input asp-for="Model" class="form-control" placeholder=" " required />
+                    <label class="floating-label"><i class="fas fa-info-circle me-1"></i> Model</label>
+                    <span asp-validation-for="Model" class="field-validation-error"></span>
+                </div>
+
+                <div class="col-md-6 floating-label-group">
+                    <input asp-for="Manufacturer" class="form-control" placeholder=" " required />
+                    <label class="floating-label"><i class="fas fa-industry me-1"></i> Manufacturer</label>
+                    <span asp-validation-for="Manufacturer" class="field-validation-error"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 form-group">
+                    <label asp-for="InstallationDate" class="form-label">
+                        <i class="fas fa-calendar-alt"></i> Installation Date
+                    </label>
+                    <input asp-for="InstallationDate" class="form-control" type="date" id="installationDate" required />
+                    <span asp-validation-for="InstallationDate" class="field-validation-error"></span>
+                </div>
+
+                @* <div class="col-md-6 floating-label-group">
+                    <input asp-for="Capacity" class="form-control" placeholder=" " required />
+                    <label class="floating-label"><i class="fas fa-battery-three-quarters me-1"></i> Capacity</label>
+                    <span asp-validation-for="Capacity" class="field-validation-error"></span>
+                </div> *@
+            </div>
+
+            <div class="action-buttons">
+                <button type="submit" class="btn btn-primary" id="submitButton">
+                    <i class="fas fa-plus-circle me-2"></i>Create Equipment
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="fas fa-times me-2"></i>Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set default date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('installationDate').value = today;
+
+            // Form elements
+            const form = document.getElementById('equipmentForm');
+            const submitButton = document.getElementById('submitButton');
+
+            if (form) {
+                // Initialize floating labels
+                const floatingInputs = document.querySelectorAll('.floating-label-group .form-control');
+                floatingInputs.forEach(input => {
+                    // Check if input has value on load
+                    if (input.value) {
+                        input.nextElementSibling.classList.add('active');
+                    }
+
+                    input.addEventListener('focus', () => {
+                        input.nextElementSibling.classList.add('active');
+                    });
+
+                    input.addEventListener('blur', () => {
+                        if (!input.value) {
+                            input.nextElementSibling.classList.remove('active');
+                        }
+                    });
+                });
+
+                // Enhanced form validation
+                form.addEventListener('submit', function(e) {
+                    // Check form validity
+                    if (!form.checkValidity()) {
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        // Add was-validated class to show validation messages
+                        form.classList.add('was-validated');
+
+                        // Find first invalid field
+                        const firstInvalid = form.querySelector(':invalid');
+                        if (firstInvalid) {
+                            // Scroll to invalid field with smooth animation
+                            firstInvalid.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'center'
+                            });
+
+                            // Add shake animation to invalid field
+                            firstInvalid.style.animation = 'shake 0.5s';
+                            setTimeout(() => {
+                                firstInvalid.style.animation = '';
+                            }, 500);
+
+                            // Focus on the invalid field
+                            firstInvalid.focus();
+                        }
+                    } else {
+                        // Form is valid - show loading state
+                        if (submitButton) {
+                            submitButton.disabled = true;
+                            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Processing...';
+                            submitButton.classList.add('processing');
+
+                            // Add pulse animation
+                            submitButton.style.animation = 'pulse 1.5s infinite';
+                        }
+                    }
+                });
+
+                // Add animation to form elements on load
+                const formGroups = document.querySelectorAll('.form-group, .floating-label-group');
+                formGroups.forEach((group, index) => {
+                    group.style.opacity = '0';
+                    group.style.transform = 'translateY(20px)';
+                    group.style.animation = `slideUp 0.5s ${index * 0.1}s forwards`;
+                });
+            }
+
+            // Add shake animation for invalid fields
+            const style = document.createElement('style');
+            style.textContent = `
+                @@keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    20%, 60% { transform: translateX(-5px); }
+                    40%, 80% { transform: translateX(5px); }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+}

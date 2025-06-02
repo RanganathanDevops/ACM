@@ -1,0 +1,455 @@
+﻿@model ACMaintenanceTracker.Models.CreateMaintenanceRecord
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Create Maintenance Record";
+    var equipmentId = ViewData["EquipmentId"] as int?;
+    var equipmentIdentifier = ViewData["EquipmentIdentifier"] as string;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --success-color: #4cc9f0;
+            --danger-color: #f72585;
+            --warning-color: #f8961e;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .form-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background: white;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .form-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: none;
+        }
+
+            .form-header h1 {
+                font-weight: 700;
+                margin-bottom: 0.5rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+                .form-header h1 i {
+                    margin-right: 10px;
+                }
+
+            .form-header p {
+                opacity: 0.9;
+                margin-bottom: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+                .form-header p i {
+                    margin-right: 8px;
+                }
+
+        .form-body {
+            padding: 2rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+            .form-label i {
+                margin-right: 10px;
+                width: 20px;
+                color: var(--primary-color);
+            }
+
+        .form-control, .form-select {
+            height: 50px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+            .form-control:focus, .form-select:focus {
+                border-color: var(--accent-color);
+                box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+            }
+
+        textarea.form-control {
+            height: auto;
+            min-height: 120px;
+        }
+
+        .input-group-text {
+            background-color: #f0f2f5;
+            border-color: #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+            .btn-primary:hover {
+                background-color: var(--secondary-color);
+                border-color: var(--secondary-color);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
+        .btn-outline-secondary {
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+            .btn-outline-secondary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
+        .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .validation-summary-errors ul {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 1.5rem;
+        }
+
+        .validation-summary-errors li {
+            color: var(--danger-color);
+            padding: 0.75rem 1rem;
+            background-color: rgba(247, 37, 133, 0.1);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+            .validation-summary-errors li i {
+                margin-right: 10px;
+            }
+
+        .field-validation-error {
+            color: var(--danger-color);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: block;
+        }
+
+        .required-field::after {
+            content: " *";
+            color: var(--danger-color);
+        }
+
+        /* Animation classes */
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @@keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group {
+            opacity: 0;
+            animation: slideUp 0.5s ease-out forwards;
+        }
+
+        /* Cost input styling */
+        .cost-input-container {
+            position: relative;
+        }
+
+        .cost-symbol {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--dark-color);
+            z-index: 3;
+        }
+
+        .cost-input {
+            padding-left: 30px !important;
+        }
+
+        /* Responsive adjustments */
+        @@media (max-width: 768px) {
+            .form-container {
+                margin: 1rem;
+                border-radius: 0;
+            }
+
+            .form-body {
+                padding: 1.5rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .btn-primary, .btn-outline-secondary {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <div class="form-header">
+            <h1><i class="fas fa-tools"></i>@ViewData["Title"]</h1>
+            <p><i class="fas fa-cog"></i>For Equipment: @equipmentIdentifier</p>
+        </div>
+
+        <div class="form-body">
+            <form asp-action="Create" id="maintenanceForm">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="validation-summary-errors mb-4"></div>
+
+                <input type="hidden" asp-for="EquipmentId" value="@equipmentId" />
+
+                <div class="form-group mb-4" style="animation-delay: 0.1s">
+                    <label asp-for="MaintenanceDate" class="form-label required-field">
+                        <i class="fas fa-calendar-alt"></i>Maintenance Date
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-calendar-day"></i></span>
+                        <input asp-for="MaintenanceDate" class="form-control" type="date" id="maintenanceDate" required />
+                    </div>
+                    <span asp-validation-for="MaintenanceDate" class="field-validation-error"></span>
+                </div>
+
+                <div class="form-group mb-4" style="animation-delay: 0.2s">
+                    <label asp-for="MaintenanceType" class="form-label required-field">
+                        <i class="fas fa-tasks"></i>Maintenance Type
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-list"></i></span>
+                        <select asp-for="MaintenanceType" class="form-select" required>
+                            <option value="">-- Select Maintenance Type --</option>
+                            <option value="Routine Inspection">Routine Inspection</option>
+                            <option value="Preventive Maintenance">Preventive Maintenance</option>
+                            <option value="Corrective Maintenance">Corrective Maintenance</option>
+                            <option value="Emergency Repair">Emergency Repair</option>
+                            <option value="Component Replacement">Component Replacement</option>
+                            <option value="Calibration">Calibration</option>
+                            <option value="Testing">Testing</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <span asp-validation-for="MaintenanceType" class="field-validation-error"></span>
+                </div>
+
+                <div class="form-group mb-4" style="animation-delay: 0.3s">
+                    <label asp-for="TechnicianName" class="form-label required-field">
+                        <i class="fas fa-user-tie"></i>Technician Name
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-id-badge"></i></span>
+                        <input asp-for="TechnicianName" class="form-control" required placeholder="Enter technician name" />
+                    </div>
+                    <span asp-validation-for="TechnicianName" class="field-validation-error"></span>
+                </div>
+
+                <div class="form-group mb-4" style="animation-delay: 0.4s">
+                    <label asp-for="PartsReplaced" class="form-label">
+                        <i class="fas fa-cogs"></i>Parts Replaced
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-box-open"></i></span>
+                        <input asp-for="PartsReplaced" class="form-control" placeholder="List any replaced parts (comma separated)" />
+                    </div>
+                    <span asp-validation-for="PartsReplaced" class="field-validation-error"></span>
+                </div>
+
+                <div class="form-group mb-4" style="animation-delay: 0.5s">
+                    <label asp-for="Cost" class="form-label">
+                        <i class="fas fa-dollar-sign"></i>Cost
+                    </label>
+                    <div class="input-group cost-input-container">
+                        <span class="input-group-text"><i class="fas fa-receipt"></i></span>
+                        <span class="cost-symbol">$</span>
+                        <input asp-for="Cost" class="form-control cost-input" type="number" step="0.01" placeholder="0.00" />
+                    </div>
+                    <span asp-validation-for="Cost" class="field-validation-error"></span>
+                </div>
+
+                <div class="form-group mb-4" style="animation-delay: 0.6s">
+                    <label asp-for="Notes" class="form-label">
+                        <i class="fas fa-clipboard"></i>Work Performed
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-comment-dots"></i></span>
+                        <textarea asp-for="Notes" class="form-control" rows="5" placeholder="Describe the work performed..."></textarea>
+                    </div>
+                    <span asp-validation-for="Notes" class="field-validation-error"></span>
+                </div>
+
+                <div class="form-group mb-4" style="animation-delay: 0.7s">
+                    <label asp-for="NextMaintenanceDate" class="form-label">
+                        <i class="fas fa-calendar-check"></i>Next Maintenance Due
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-forward"></i></span>
+                        <input asp-for="NextMaintenanceDate" class="form-control" type="date" id="nextMaintenanceDate" />
+                    </div>
+                    <span asp-validation-for="NextMaintenanceDate" class="field-validation-error"></span>
+                </div>
+
+                <div class="action-buttons" style="animation-delay: 0.8s">
+                    <a href="@Url.Action("Details", "Equipment", new { id = equipmentId })" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary" id="submitButton">
+                        <i class="fas fa-save me-2"></i>Create Record
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- jQuery Validation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/4.0.0/jquery.validate.unobtrusive.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Set default dates
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('maintenanceDate').value = today;
+
+            // Set next maintenance date to 3 months from now by default
+            const nextDate = new Date();
+            nextDate.setMonth(nextDate.getMonth() + 3);
+            const nextDateFormatted = nextDate.toISOString().split('T')[0];
+            document.getElementById('nextMaintenanceDate').value = nextDateFormatted;
+
+            // Form submission handling
+            const form = document.getElementById('maintenanceForm');
+            if (form) {
+                form.addEventListener('submit', function (e) {
+                    const submitButton = form.querySelector('button[type="submit"]');
+                    if (submitButton) {
+                        submitButton.disabled = true;
+                        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Saving...';
+                    }
+                });
+            }
+
+            // Input focus effects
+            const inputs = document.querySelectorAll('.form-control, .form-select');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    const parent = this.closest('.input-group');
+                    if (parent) {
+                        parent.querySelector('.input-group-text').style.backgroundColor = '#e0e7ff';
+                    }
+                });
+
+                input.addEventListener('blur', function() {
+                    const parent = this.closest('.input-group');
+                    if (parent) {
+                        parent.querySelector('.input-group-text').style.backgroundColor = '#f0f2f5';
+                    }
+                });
+            });
+
+            // Format cost input
+            const costInput = document.querySelector('input[name="Cost"]');
+            if (costInput) {
+                costInput.addEventListener('blur', function() {
+                    if (this.value) {
+                        this.value = parseFloat(this.value).toFixed(2);
+                    }
+                });
+            }
+
+            // Show success message if coming from successful action
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('success')) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: urlParams.get('success'),
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            }
+        });
+    </script>
+</body>
+</html>

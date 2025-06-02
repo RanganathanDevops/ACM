@@ -9,22 +9,49 @@ using System.Drawing.Imaging;
 
 namespace ACMaintenanceTracker.Controllers
 {
-    public class ACUnitsController : Controller
+    public class EquipmentController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public ACUnitsController(ApplicationDbContext context)
+        public EquipmentController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: ACUnits
-        public async Task<IActionResult> Index()
+        // GET: Equipment
+        //public async Task<IActionResult> Index()
+        //{
+        //    return View(await _context.Equipment
+        //        .Include(e => e.MaintenanceRecords)
+        //        .OrderBy(e => e.EquipmentType)
+        //        .ThenBy(e => e.EquipmentIdentifier)
+        //        .ToListAsync());
+        //}
+        public async Task<IActionResult> Index(string type)
         {
-            return View(await _context.ACUnits.Include(a => a.MaintenanceRecords).ToListAsync());
+            IQueryable<Equipment> query = _context.Equipment
+                .Include(e => e.MaintenanceRecords)
+                .OrderBy(e => e.EquipmentType)
+                .ThenBy(e => e.EquipmentIdentifier);
+
+            // Filter by equipment type if provided
+            if (!string.IsNullOrEmpty(type))
+            {
+                if (Enum.TryParse<EquipmentType>(type, out var typeFilter))
+                {
+                    query = query.Where(e => e.EquipmentType == typeFilter);
+                }
+            }
+
+            var equipmentList = await query.ToListAsync();
+
+            // Pass the current filter to the view
+            ViewData["CurrentFilter"] = type;
+
+            return View(equipmentList);
         }
 
-        // GET: ACUnits/Details/5
+        // GET: Equipment/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -32,48 +59,50 @@ namespace ACMaintenanceTracker.Controllers
                 return NotFound();
             }
 
-            var aCUnit = await _context.ACUnits
-                .Include(a => a.MaintenanceRecords)
+            var equipment = await _context.Equipment
+                .Include(e => e.MaintenanceRecords)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            var viewmodel = aCUnit;
-            if (aCUnit == null)
+
+            if (equipment == null)
             {
                 return NotFound();
             }
 
-            return View(viewmodel);
+            return View(equipment);
         }
 
-        // GET: ACUnits/Create
+        // GET: Equipment/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: ACUnits/Create
+        // POST: Equipment/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ACUnitCreateViewModel viewModel)
+        public async Task<IActionResult> Create(EquipmentCreateViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
-                var aCUnit = new ACUnit
+                var equipment = new Equipment
                 {
-                    ACIdentifier = viewModel.ACIdentifier,
-                    FloorNumber = viewModel.FloorNumber,
-                    RoomNumber = viewModel.RoomNumber,
+                    EquipmentIdentifier = viewModel.EquipmentIdentifier,
+                    EquipmentType = viewModel.EquipmentType,
+                    Location = viewModel.Location,
                     Model = viewModel.Model,
-                    InstallationDate = viewModel.InstallationDate.ToUniversalTime()
+                    Manufacturer = viewModel.Manufacturer,
+                    InstallationDate = viewModel.InstallationDate.ToUniversalTime(),
+                    //Capacity = viewModel.Capacity
                 };
 
-                _context.Add(aCUnit);
+                _context.Add(equipment);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(viewModel);
         }
 
-        // GET: ACUnits/Edit/5
+        // GET: Equipment/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -81,29 +110,33 @@ namespace ACMaintenanceTracker.Controllers
                 return NotFound();
             }
 
-            var aCUnit = await _context.ACUnits.FindAsync(id);
-            if (aCUnit == null)
+            var equipment = await _context.Equipment.FindAsync(id);
+            if (equipment == null)
             {
                 return NotFound();
             }
-            return View(aCUnit);
+
+            var viewModel = new EquipmentEditViewModel
+            {
+                Id = equipment.Id,
+                EquipmentIdentifier = equipment.EquipmentIdentifier,
+                EquipmentType = equipment.EquipmentType,
+                Location = equipment.Location,
+                Model = equipment.Model,
+                Manufacturer = equipment.Manufacturer,
+                InstallationDate = equipment.InstallationDate ?? DateTime.UtcNow,
+                //Capacity = equipment.Capacity
+            };
+
+            return View(viewModel);
         }
 
-        // POST: ACUnits/Edit/5
+        // POST: Equipment/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, ACUnitEditViewModel viewModel)
+        public async Task<IActionResult> Edit(int id, EquipmentEditViewModel viewModel)
         {
-            var aCUnit = new ACUnit
-            {
-                Id = viewModel.Id,
-                ACIdentifier = viewModel.ACIdentifier,
-                FloorNumber = viewModel.FloorNumber,
-                RoomNumber = viewModel.RoomNumber,
-                Model = viewModel.Model,
-                InstallationDate = viewModel.InstallationDate.ToUniversalTime()
-            };
-            if (id != aCUnit.Id)
+            if (id != viewModel.Id)
             {
                 return NotFound();
             }
@@ -112,13 +145,24 @@ namespace ACMaintenanceTracker.Controllers
             {
                 try
                 {
-                    
-                    _context.Update(aCUnit);
+                    var equipment = new Equipment
+                    {
+                        Id = viewModel.Id,
+                        EquipmentIdentifier = viewModel.EquipmentIdentifier,
+                        EquipmentType = viewModel.EquipmentType,
+                        Location = viewModel.Location,
+                        Model = viewModel.Model,
+                        Manufacturer = viewModel.Manufacturer,
+                        InstallationDate = viewModel.InstallationDate.ToUniversalTime(),
+                        //Capacity = viewModel.Capacity
+                    };
+
+                    _context.Update(equipment);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ACUnitExists(aCUnit.Id))
+                    if (!EquipmentExists(viewModel.Id))
                     {
                         return NotFound();
                     }
@@ -129,10 +173,10 @@ namespace ACMaintenanceTracker.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(aCUnit);
+            return View(viewModel);
         }
 
-        // GET: ACUnits/Delete/5
+        // GET: Equipment/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -140,51 +184,49 @@ namespace ACMaintenanceTracker.Controllers
                 return NotFound();
             }
 
-            var aCUnit = await _context.ACUnits
+            var equipment = await _context.Equipment
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (aCUnit == null)
+            if (equipment == null)
             {
                 return NotFound();
             }
 
-            return View(aCUnit);
+            return View(equipment);
         }
 
-        // POST: ACUnits/Delete/5
+        // POST: Equipment/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var aCUnit = await _context.ACUnits.FindAsync(id);
-            _context.ACUnits.Remove(aCUnit);
+            var equipment = await _context.Equipment.FindAsync(id);
+            _context.Equipment.Remove(equipment);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        // Generate QR Code for AC Unit
+        // Generate QR Code for Equipment
         public IActionResult GenerateQRCode(int id)
-{
-    var acUnit = _context.ACUnits.Find(id);
-    if (acUnit == null)
-    {
-        return NotFound();
-    }
+        {
+            var equipment = _context.Equipment.Find(id);
+            if (equipment == null)
+            {
+                return NotFound();
+            }
 
-    // Create QR code data - URL that will show AC info when scanned
-    string qrCodeData = $"{Request.Scheme}://{Request.Host}/ACUnits/QRDetails/{acUnit.ACIdentifier}";
+            string qrCodeData = $"{Request.Scheme}://{Request.Host}/Equipment/QRDetails/{equipment.EquipmentIdentifier}";
 
-    QRCodeGenerator qrGenerator = new QRCodeGenerator();
-    QRCodeData qrCodeDataObj = qrGenerator.CreateQrCode(qrCodeData, QRCodeGenerator.ECCLevel.Q);
-    
-    // Updated QRCode class usage
-    using (var qrCode = new BitmapByteQRCode(qrCodeDataObj))
-    {
-        byte[] qrCodeImage = qrCode.GetGraphic(20);
-        return File(qrCodeImage, "image/png");
-    }
-}
+            QRCodeGenerator qrGenerator = new QRCodeGenerator();
+            QRCodeData qrCodeDataObj = qrGenerator.CreateQrCode(qrCodeData, QRCodeGenerator.ECCLevel.Q);
 
-        // Show AC info when QR code is scanned
+            using (var qrCode = new BitmapByteQRCode(qrCodeDataObj))
+            {
+                byte[] qrCodeImage = qrCode.GetGraphic(20);
+                return File(qrCodeImage, "image/png");
+            }
+        }
+
+        // Show Equipment info when QR code is scanned
         public async Task<IActionResult> QRDetails(string id)
         {
             if (string.IsNullOrEmpty(id))
@@ -192,20 +234,20 @@ namespace ACMaintenanceTracker.Controllers
                 return NotFound();
             }
 
-            var aCUnit = await _context.ACUnits
-                .Include(a => a.MaintenanceRecords)
-                .FirstOrDefaultAsync(m => m.ACIdentifier == id);
-            if (aCUnit == null)
+            var equipment = await _context.Equipment
+                .Include(e => e.MaintenanceRecords)
+                .FirstOrDefaultAsync(m => m.EquipmentIdentifier == id);
+            if (equipment == null)
             {
                 return NotFound();
             }
 
-            return View("QRDetails", aCUnit);
+            return View("QRDetails", equipment);
         }
 
-        private bool ACUnitExists(int id)
+        private bool EquipmentExists(int id)
         {
-            return _context.ACUnits.Any(e => e.Id == id);
+            return _context.Equipment.Any(e => e.Id == id);
         }
     }
 }

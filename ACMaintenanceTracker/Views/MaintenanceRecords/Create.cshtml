@@ -2,8 +2,8 @@
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     ViewData["Title"] = "Create Maintenance Record";
-    var acIdentifier = ViewData["ACIdentifier"] as string;
-    var acUnitId = ViewData["ACUnitId"] as int?;
+    var acIdentifier = ViewData["EquipmentIdentifier"] as string;
+    var acUnitId = ViewData["EquipmentId"] as int?;
 }
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -19,8 +19,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- jQuery UI CSS -->
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.min.css">
     <style>
         :root {
             --primary-color: #4361ee;
@@ -35,168 +33,55 @@
         body {
             background-color: #f5f7fb;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: var(--dark-color);
         }
 
         .form-container {
             max-width: 800px;
-            margin: 3rem auto;
+            margin: 2rem auto;
             padding: 0;
-            border-radius: 12px;
+            border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             background: white;
         }
 
         .form-header {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
-            padding: 2rem;
+            padding: 1.5rem;
             text-align: center;
         }
 
             .form-header h1 {
-                font-weight: 700;
+                font-weight: 600;
                 margin-bottom: 0.5rem;
-            }
-
-            .form-header p {
-                opacity: 0.9;
-                margin-bottom: 0;
+                font-size: 1.75rem;
             }
 
         .form-body {
-            padding: 2.5rem;
+            padding: 2rem;
         }
 
         .form-label {
             font-weight: 600;
-            color: var(--dark-color);
             margin-bottom: 0.5rem;
         }
 
         .form-control, .form-select {
-            height: 50px;
-            border-radius: 8px;
-            border: 1px solid #e0e0e0;
-            padding: 0.75rem 1rem;
-            transition: all 0.3s ease;
+            border-radius: 6px;
+            padding: 0.6rem 1rem;
         }
 
-            .form-control:focus, .form-select:focus {
-                border-color: var(--accent-color);
-                box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
-            }
-
         textarea.form-control {
-            height: auto;
             min-height: 120px;
         }
 
         .btn-primary {
             background-color: var(--primary-color);
             border-color: var(--primary-color);
-            padding: 0.75rem 2rem;
-            border-radius: 8px;
+            padding: 0.6rem 1.5rem;
+            border-radius: 6px;
             font-weight: 600;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
-        }
-
-            .btn-primary:hover {
-                background-color: var(--secondary-color);
-                border-color: var(--secondary-color);
-                transform: translateY(-2px);
-            }
-
-        .btn-outline-secondary {
-            padding: 0.75rem 2rem;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-            .btn-outline-secondary:hover {
-                transform: translateY(-2px);
-            }
-
-        .action-buttons {
-            display: flex;
-            justify-content: flex-end;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-
-        .validation-summary-errors ul {
-            list-style: none;
-            padding-left: 0;
-            margin-bottom: 1.5rem;
-        }
-
-        .validation-summary-errors li {
-            color: var(--danger-color);
-            padding: 0.75rem 1rem;
-            background-color: rgba(247, 37, 133, 0.1);
-            border-radius: 8px;
-            margin-bottom: 0.5rem;
-        }
-
-        .field-validation-error {
-            color: var(--danger-color);
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
-            display: block;
-        }
-
-        .input-group-text {
-            background-color: #f0f2f5;
-            border-color: #e0e0e0;
-        }
-
-        /* Animation classes */
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
-
-        .slide-up {
-            animation: slideUp 0.5s ease-out;
-        }
-
-        @@keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-
-        @@keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Datepicker styling */
-        .ui-datepicker {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            padding: 1rem;
-        }
-
-        .ui-datepicker-header {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 6px 6px 0 0;
         }
 
         .required-field::after {
@@ -204,108 +89,96 @@
             color: var(--danger-color);
         }
 
-        @@media (max-width: 768px) {
-            .form-container {
-                margin: 1rem;
-                border-radius: 0;
-            }
-
-            .form-body {
-                padding: 1.5rem;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-                gap: 0.75rem;
-            }
-
-            .btn-primary, .btn-outline-secondary {
-                width: 100%;
-            }
+        .input-group-text {
+            background-color: #f0f2f5;
         }
     </style>
 </head>
 <body>
-    <div class="form-container fade-in">
-        <div class="form-header slide-up">
+    <div class="form-container">
+        <div class="form-header">
             <h1><i class="fas fa-tools me-2"></i>@ViewData["Title"]</h1>
-            <p><i class="fas fa-snowflake me-2"></i>For AC Unit: @acIdentifier</p>
+            <p><i class="fas fa-snowflake me-2"></i>For Equipment: @acIdentifier</p>
         </div>
 
         <div class="form-body">
-            <form asp-action="Create" id="maintenanceForm" class="slide-up" style="animation-delay: 0.1s">
+            <form asp-action="Create" id="maintenanceForm">
                 @Html.AntiForgeryToken()
-                <div asp-validation-summary="ModelOnly" class="validation-summary-errors mb-4"></div>
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4"></div>
 
-                <input type="hidden" asp-for="ACUnitId" value="@acUnitId" />
+                <input type="hidden" asp-for="EquipmentId" value="@acUnitId" />
 
-                <div class="mb-4">
-                    <label asp-for="MaintenanceDate" class="form-label">
-                        <i class="fas fa-calendar-check me-2"></i>Maintenance Date
-                    </label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-forward"></i></span>
-                        <input asp-for="MaintenanceDate" class="form-control" type="date" id="maintenanceDate" />
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="MaintenanceDate" class="form-label required-field">
+                            <i class="fas fa-calendar-alt me-2"></i>Maintenance Date
+                        </label>
+                        <input asp-for="MaintenanceDate" class="form-control" type="date" required />
+                        <span asp-validation-for="MaintenanceDate" class="text-danger small"></span>
                     </div>
-                    <span asp-validation-for="MaintenanceDate" class="field-validation-error"></span>
+
+                    <div class="col-md-6">
+                        <label asp-for="NextMaintenanceDate" class="form-label">
+                            <i class="fas fa-calendar-check me-2"></i>Next Maintenance Date
+                        </label>
+                        <input asp-for="NextMaintenanceDate" class="form-control" type="date" />
+                        <span asp-validation-for="NextMaintenanceDate" class="text-danger small"></span>
+                    </div>
                 </div>
 
-                <div class="mb-4">
+                <div class="mb-3">
                     <label asp-for="MaintenanceType" class="form-label required-field">
                         <i class="fas fa-tasks me-2"></i>Maintenance Type
                     </label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-list"></i></span>
-                        <select asp-for="MaintenanceType" class="form-select" required>
-                            <option value="">-- Select Maintenance Type --</option>
-                            <option value="Routine Check">Routine Check</option>
-                            <option value="Filter Replacement">Filter Replacement</option>
-                            <option value="Coil Cleaning">Coil Cleaning</option>
-                            <option value="Refrigerant Recharge">Refrigerant Recharge</option>
-                            <option value="Electrical Repair">Electrical Repair</option>
-                            <option value="Mechanical Repair">Mechanical Repair</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-                    <span asp-validation-for="MaintenanceType" class="field-validation-error"></span>
+                    <select asp-for="MaintenanceType" class="form-select" required>
+                        <option value="">-- Select Type --</option>
+                        <option value="Preventive Maintenance">Preventive Maintenance</option>
+                        <option value="Corrective Maintenance">Corrective Maintenance</option>
+                        <option value="Comprehensive Check">Comprehensive Check</option>
+                        <option value="Safety Inspection">Safety Inspection</option>
+                        <option value="Emergency Repair">Emergency Repair</option>
+                    </select>
+                    <span asp-validation-for="MaintenanceType" class="text-danger small"></span>
                 </div>
 
-                <div class="mb-4">
-                    <label asp-for="TechnicianName" class="form-label required-field">
+                <div class="mb-3">
+                    <label asp-for="TechnicianName" class="form-label">
                         <i class="fas fa-user-tie me-2"></i>Technician Name
                     </label>
+                    <input asp-for="TechnicianName" class="form-control" placeholder="Name of technician" />
+                    <span asp-validation-for="TechnicianName" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="PartsReplaced" class="form-label">
+                        <i class="fas fa-cog me-2"></i>Parts Replaced
+                    </label>
+                    <textarea asp-for="PartsReplaced" class="form-control" rows="2" placeholder="List any parts replaced (comma separated)"></textarea>
+                    <span asp-validation-for="PartsReplaced" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Cost" class="form-label">
+                        <i class="fas fa-dollar-sign me-2"></i>Cost
+                    </label>
                     <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-id-badge"></i></span>
-                        <input asp-for="TechnicianName" class="form-control" required placeholder="John Smith" />
+                        <span class="input-group-text">$</span>
+                        <input asp-for="Cost" type="number" step="0.01" class="form-control" placeholder="0.00" />
                     </div>
-                    <span asp-validation-for="TechnicianName" class="field-validation-error"></span>
+                    <span asp-validation-for="Cost" class="text-danger small"></span>
                 </div>
 
                 <div class="mb-4">
                     <label asp-for="Notes" class="form-label">
                         <i class="fas fa-clipboard me-2"></i>Notes
                     </label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-comment"></i></span>
-                        <textarea asp-for="Notes" class="form-control" rows="4" placeholder="Enter any additional details..."></textarea>
-                    </div>
-                    <span asp-validation-for="Notes" class="field-validation-error"></span>
+                    <textarea asp-for="Notes" class="form-control" rows="4" placeholder="Detailed notes about the maintenance performed..."></textarea>
+                    <span asp-validation-for="Notes" class="text-danger small"></span>
                 </div>
 
-                <div class="mb-4">
-                    <label asp-for="NextMaintenanceDate" class="form-label">
-                        <i class="fas fa-calendar-check me-2"></i>Next Maintenance Date
-                    </label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-forward"></i></span>
-                        <input asp-for="NextMaintenanceDate" class="form-control" type="date" id="nextMaintenanceDate" />
-                    </div>
-                    <span asp-validation-for="NextMaintenanceDate" class="field-validation-error"></span>
-                </div>
-
-                <div class="action-buttons">
-                    <a href="@Url.Action("Details", "ACUnits", new { id = acUnitId })" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left me-2"></i>Back to Unit
+                <div class="d-flex justify-content-between">
+                    <a href="@Url.Action("Details", "Equipment", new { id = acUnitId })" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Equipment
                     </a>
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-save me-2"></i>Create Record
@@ -317,29 +190,20 @@
 
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- jQuery UI -->
-    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
     <!-- jQuery Validation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/4.0.0/jquery.validate.unobtrusive.min.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize datepickers
+            // Set default date to today
             const today = new Date().toISOString().split('T')[0];
-            document.getElementById('maintenanceDate').value = today;
-
-            document.getElementById('nextMaintenanceDate').value = today;
-
-            // Set default date for MaintenanceDate
-            $("#MaintenanceDate").datepicker("setDate", new Date());
+            document.getElementById('MaintenanceDate').value = today;
 
             // Form submission handling
             const form = document.getElementById('maintenanceForm');
             if (form) {
-                form.addEventListener('submit', function(e) {
+                form.addEventListener('submit', function() {
                     const submitButton = form.querySelector('button[type="submit"]');
                     if (submitButton) {
                         submitButton.disabled = true;
@@ -347,31 +211,6 @@
                     }
                 });
             }
-
-            // Add animation to form elements
-            const formGroups = document.querySelectorAll('.mb-4');
-            formGroups.forEach((group, index) => {
-                group.style.animation = `slideUp 0.5s ease-out ${0.2 + (index * 0.1)}s forwards`;
-                group.style.opacity = '0';
-            });
-
-            // Input focus effects
-            const inputs = document.querySelectorAll('.form-control, .form-select');
-            inputs.forEach(input => {
-                input.addEventListener('focus', function() {
-                    const parent = this.closest('.input-group');
-                    if (parent) {
-                        parent.querySelector('.input-group-text').style.backgroundColor = '#e0e7ff';
-                    }
-                });
-
-                input.addEventListener('blur', function() {
-                    const parent = this.closest('.input-group');
-                    if (parent) {
-                        parent.querySelector('.input-group-text').style.backgroundColor = '#f0f2f5';
-                    }
-                });
-            });
         });
     </script>
 </body>

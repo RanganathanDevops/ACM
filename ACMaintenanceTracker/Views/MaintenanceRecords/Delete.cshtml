@@ -92,7 +92,7 @@
     </div>
 
     <div class="confirmation-message">
-        Are you sure you want to delete this maintenance record for AC Unit <strong>@Model.ACUnit.ACIdentifier</strong>?
+        Are you sure you want to delete this maintenance record for AC Unit <strong>@Model.EquipmentId</strong>?
     </div>
 
     <dl class="details-list">
@@ -115,7 +115,7 @@
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
         <button type="submit" class="btn btn-danger">Delete Permanently</button>
-        <a href="@Url.Action("Details", "ACUnits", new { id = Model.ACUnitId })" class="btn btn-secondary">Cancel</a>
+        <a href="@Url.Action("Details", "ACUnits", new { id = Model.EquipmentId })" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
 

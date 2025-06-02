@@ -16,47 +16,49 @@ namespace ACMaintenanceTracker.Controllers
             _context = context;
         }
 
-        // Create a ViewModel class in your Models folder
         public class HomeViewModel
         {
             public List<MaintenanceRecord> RecentMaintenance { get; set; }
-            public List<ACUnit> DueForMaintenance { get; set; }
+            public List<Equipment> DueForMaintenance { get; set; }
+            public Dictionary<EquipmentType, int> EquipmentCounts { get; set; }
         }
 
-        // Update your HomeController
         public async Task<IActionResult> Index()
         {
             try
             {
-
                 var todayUtc = DateTime.UtcNow.Date;
                 var thirtyDaysFromNowUtc = todayUtc.AddDays(30);
 
                 var recentMaintenance = await _context.MaintenanceRecords
-                    .Include(m => m.ACUnit)
+                    .Include(m => m.Equipment)
                     .OrderByDescending(m => m.MaintenanceDate)
                     .Take(5)
                     .ToListAsync();
 
-                var dueForMaintenance = await _context.ACUnits
-                    .Include(a => a.MaintenanceRecords)
-                    .Where(a => a.MaintenanceRecords.Any(m =>
+                var dueForMaintenance = await _context.Equipment
+                    .Include(e => e.MaintenanceRecords)
+                    .Where(e => e.MaintenanceRecords.Any(m =>
                         m.NextMaintenanceDate.HasValue &&
                         m.NextMaintenanceDate.Value.Date <= thirtyDaysFromNowUtc))
                     .ToListAsync();
 
+                var equipmentCounts = await _context.Equipment
+                    .GroupBy(e => e.EquipmentType)
+                    .Select(g => new { Type = g.Key, Count = g.Count() })
+                    .ToDictionaryAsync(x => x.Type, x => x.Count);
+
                 var viewModel = new HomeViewModel
                 {
                     RecentMaintenance = recentMaintenance,
-                    DueForMaintenance = dueForMaintenance
+                    DueForMaintenance = dueForMaintenance,
+                    EquipmentCounts = equipmentCounts
                 };
-
 
                 return View(viewModel);
             }
             catch (Exception ex)
             {
-                // Log the error or return a meaningful error message
                 return Content($"An error occurred: {ex.Message}");
             }
         }

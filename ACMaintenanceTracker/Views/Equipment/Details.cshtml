@@ -1,0 +1,501 @@
+﻿@using ACMaintenanceTracker.Models
+@model ACMaintenanceTracker.Models.Equipment
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Equipment Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --success-color: #4cc9f0;
+            --warning-color: #f8961e;
+            --danger-color: #f72585;
+            --info-color: #4895ef;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--dark-color);
+        }
+
+        .details-card {
+            max-width: 1200px;
+            margin: 2rem auto;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background: white;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem;
+            border-bottom: none;
+        }
+
+            .card-header h4 {
+                font-weight: 700;
+                margin-bottom: 0;
+                display: flex;
+                align-items: center;
+            }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .card-footer {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        dl.row {
+            margin-bottom: 2rem;
+        }
+
+        dt.col-sm-3 {
+            font-weight: 600;
+            color: var(--dark-color);
+            padding: 0.75rem 0;
+            display: flex;
+            align-items: center;
+        }
+
+        dd.col-sm-9 {
+            padding: 0.75rem 0;
+            color: #495057;
+        }
+
+        .maintenance-title {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin: 2rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--accent-color);
+            display: flex;
+            align-items: center;
+        }
+
+        .table {
+            margin-top: 1rem;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+            .table th {
+                background-color: var(--primary-color);
+                color: white;
+                font-weight: 600;
+                padding: 1rem;
+            }
+
+            .table td {
+                vertical-align: middle;
+                padding: 0.75rem 1rem;
+            }
+
+            .table tr:nth-child(even) {
+                background-color: rgba(67, 97, 238, 0.05);
+            }
+
+            .table tr:hover {
+                background-color: rgba(67, 97, 238, 0.1);
+            }
+
+        .alert-info {
+            background-color: rgba(72, 149, 239, 0.1);
+            border-color: rgba(72, 149, 239, 0.2);
+            color: var(--dark-color);
+        }
+
+        .btn {
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-warning {
+            background-color: var(--warning-color);
+            border-color: var(--warning-color);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+
+        .btn-info {
+            background-color: var(--info-color);
+            border-color: var(--info-color);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .badge-success {
+            background-color: rgba(76, 201, 240, 0.1);
+            color: #4cc9f0;
+        }
+
+        .badge-warning {
+            background-color: rgba(248, 150, 30, 0.1);
+            color: #f8961e;
+        }
+
+        .badge-danger {
+            background-color: rgba(247, 37, 133, 0.1);
+            color: #f72585;
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .details-card {
+                margin: 1rem;
+                border-radius: 0;
+            }
+
+            .card-body {
+                padding: 1.5rem;
+            }
+
+            .card-footer {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+
+            dl.row {
+                display: flex;
+                flex-direction: column;
+            }
+
+            dt.col-sm-3, dd.col-sm-9 {
+                width: 100%;
+                padding: 0.5rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="details-card animate__animated animate__fadeIn">
+            <div class="card-header">
+                <h4>
+                    <i class="@GetIconForEquipmentType(Model.EquipmentType) me-2"></i>@Model.EquipmentType Details - @Model.EquipmentIdentifier
+                </h4>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">
+                        <i class="fas fa-id-card text-muted me-2"></i>Equipment Identifier
+                    </dt>
+                    <dd class="col-sm-9">@Model.EquipmentIdentifier</dd>
+
+                    <dt class="col-sm-3">
+                        <i class="fas fa-tag text-muted me-2"></i>Type
+                    </dt>
+                    <dd class="col-sm-9">@Model.EquipmentType</dd>
+
+                    <dt class="col-sm-3">
+                        <i class="fas fa-map-marker-alt text-muted me-2"></i>Location
+                    </dt>
+                    <dd class="col-sm-9">@Model.Location</dd>
+
+                    <dt class="col-sm-3">
+                        <i class="fas fa-info-circle text-muted me-2"></i>Model
+                    </dt>
+                    <dd class="col-sm-9">@Model.Model</dd>
+
+                    <dt class="col-sm-3">
+                        <i class="fas fa-industry text-muted me-2"></i>Manufacturer
+                    </dt>
+                    <dd class="col-sm-9">@Model.Manufacturer</dd>
+
+                    <dt class="col-sm-3">
+                        <i class="fas fa-calendar-alt text-muted me-2"></i>Installation Date
+                    </dt>
+                    <dd class="col-sm-9">@Model.InstallationDate?.ToString("d")</dd>
+
+                    <dt class="col-sm-3">
+                        <i class="fas fa-battery-three-quarters text-muted me-2"></i>Capacity
+                    </dt>
+                    @* <dd class="col-sm-9">@Model.Capacity</dd> *@
+                </dl>
+
+                <h5 class="maintenance-title animate__animated animate__fadeIn">
+                    <i class="fas fa-tools me-2"></i>Maintenance Records
+                </h5>
+                @if (Model.MaintenanceRecords != null && Model.MaintenanceRecords.Any())
+                {
+                    <div class="table-responsive animate__animated animate__fadeIn">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Technician</th>
+                                    <th>Parts Replaced</th>
+                                    <th>Cost</th>
+                                    <th>Next Service</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var record in Model.MaintenanceRecords.OrderByDescending(r => r.MaintenanceDate))
+                                {
+                                    <tr class="animate__animated animate__fadeInUp" style="animation-delay: @(0.1 * Model.MaintenanceRecords.ToList().IndexOf(record))s">
+                                        <td>@record.MaintenanceDate.ToString("d")</td>
+                                        <td>@record.MaintenanceType</td>
+                                        <td>@record.TechnicianName</td>
+                                        <td>@(string.IsNullOrEmpty(record.PartsReplaced) ? "-" : record.PartsReplaced)</td>
+                                        <td>@(record.Cost?.ToString("C") ?? "-")</td>
+                                        <td>@(record.NextMaintenanceDate?.ToString("d") ?? "-")</td>
+                                        <td>
+                                            @{
+                                                var statusClass = "";
+                                                var statusText = "";
+                                                if (record.NextMaintenanceDate.HasValue)
+                                                {
+                                                    if (record.NextMaintenanceDate < DateTime.Now)
+                                                    {
+                                                        statusClass = "badge-danger";
+                                                        statusText = "Overdue";
+                                                    }
+                                                    else if (record.NextMaintenanceDate < DateTime.Now.AddDays(30))
+                                                    {
+                                                        statusClass = "badge-warning";
+                                                        statusText = "Due Soon";
+                                                    }
+                                                    else
+                                                    {
+                                                        statusClass = "badge-success";
+                                                        statusText = "Up to Date";
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    statusClass = "badge-success";
+                                                    statusText = "N/A";
+                                                }
+                                            }
+                                            <span class="status-badge @statusClass">@statusText</span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info animate__animated animate__fadeIn">
+                        <i class="fas fa-info-circle me-2"></i>No maintenance records found for this equipment.
+                    </div>
+                }
+            </div>
+            <div class="card-footer">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                    <i class="fas fa-edit me-1"></i>Edit
+                </a>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Back to List
+                </a>
+                <a asp-action="GenerateQRCode" asp-route-id="@Model.Id" class="btn btn-info">
+                    <i class="fas fa-qrcode me-1"></i>QR Code
+                </a>
+                <a asp-controller="MaintenanceRecords" asp-action="Create" asp-route-equipmentId="@Model.Id"
+                   class="btn btn-success">
+                    <i class="fas fa-plus me-1"></i>Add Maintenance
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Add hover effects to table rows
+            $('table tr').hover(
+                function () {
+                    $(this).css('transform', 'translateX(5px)');
+                },
+                function () {
+                    $(this).css('transform', 'translateX(0)');
+                }
+            );
+
+            // Smooth scroll to maintenance section
+            $('.maintenance-title').click(function () {
+                $('html, body').animate({
+                    scrollTop: $(this).offset().top - 20
+                }, 500);
+            });
+
+            // Tooltip initialization
+            $('[data-toggle="tooltip"]').tooltip();
+
+            // Add animation to elements as they come into view
+            const animateOnScroll = function () {
+                $('.animate__animated').each(function () {
+                    const elementTop = $(this).offset().top;
+                    const elementBottom = elementTop + $(this).outerHeight();
+                    const viewportTop = $(window).scrollTop();
+                    const viewportBottom = viewportTop + $(window).height();
+
+                    if (elementBottom > viewportTop && elementTop < viewportBottom) {
+                        $(this).addClass('animate__fadeIn');
+                    }
+                });
+            };
+
+            // Run once on page load
+            animateOnScroll();
+
+            // Run on scroll
+            $(window).scroll(function () {
+                animateOnScroll();
+            });
+
+            // Create maintenance status chart if records exist
+            @if (Model.MaintenanceRecords != null && Model.MaintenanceRecords.Any())
+            {
+                        <text>
+                        const ctx = document.createElement('canvas');
+                        ctx.id = 'maintenanceChart';
+                        $('.maintenance-title').after('<div class="chart-container mb-4"><canvas id="maintenanceChart" height="100"></canvas></div>');
+
+                        const statusCounts = {
+                            overdue: @Model.MaintenanceRecords.Count(r => r.NextMaintenanceDate.HasValue && r.NextMaintenanceDate < DateTime.Now),
+                            dueSoon: @Model.MaintenanceRecords.Count(r => r.NextMaintenanceDate.HasValue && r.NextMaintenanceDate >= DateTime.Now && r.NextMaintenanceDate < DateTime.Now.AddDays(30)),
+                            upToDate: @Model.MaintenanceRecords.Count(r => !r.NextMaintenanceDate.HasValue || r.NextMaintenanceDate >= DateTime.Now.AddDays(30))
+                        };
+
+                        new Chart(ctx, {
+                            type: 'doughnut',
+                            data: {
+                                labels: ['Overdue', 'Due Soon', 'Up to Date'],
+                                datasets: [{
+                                    data: [statusCounts.overdue, statusCounts.dueSoon, statusCounts.upToDate],
+                                    backgroundColor: [
+                                        'rgba(247, 37, 133, 0.8)',
+                                        'rgba(248, 150, 30, 0.8)',
+                                        'rgba(76, 201, 240, 0.8)'
+                                    ],
+                                    borderColor: [
+                                        'rgba(247, 37, 133, 1)',
+                                        'rgba(248, 150, 30, 1)',
+                                        'rgba(76, 201, 240, 1)'
+                                    ],
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: 'Maintenance Status Overview',
+                                        font: {
+                                            size: 16,
+                                            weight: 'bold'
+                                        }
+                                    }
+                                },
+                                cutout: '70%',
+                                animation: {
+                                    animateScale: true,
+                                    animateRotate: true
+                                }
+                            }
+                        });
+                        </text>
+            }
+        });
+    </script>
+</body>
+</html>
+
+@functions {
+    string GetIconForEquipmentType(EquipmentType type)
+    {
+        return type switch
+        {
+            EquipmentType.Transformer => "fas fa-bolt",
+            EquipmentType.Generator => "fas fa-gas-pump",
+            EquipmentType.WaterPlant => "fas fa-tint",
+            EquipmentType.ROPlant => "fas fa-filter",
+            EquipmentType.STPlant => "fas fa-recycle",
+            EquipmentType.FireSystem => "fas fa-fire-extinguisher",
+            EquipmentType.ACIndoorUnit => "fas fa-snowflake",
+            EquipmentType.ACOutdoorUnit => "fas fa-fan",
+            _ => "fas fa-cog"
+        };
+    }
+}
