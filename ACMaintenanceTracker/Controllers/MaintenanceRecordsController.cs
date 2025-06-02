@@ -25,6 +25,7 @@ namespace ACMaintenanceTracker.Controllers
 
             ViewData["EquipmentId"] = equipmentId;
             ViewData["EquipmentIdentifier"] = equipment.EquipmentIdentifier;
+            ViewData["EquipmentType"] = equipment.EquipmentType;
             return View();
         }
 
