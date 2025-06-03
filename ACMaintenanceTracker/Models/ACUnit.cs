@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ACMaintenanceTracker.Models
 {
@@ -41,12 +42,6 @@ namespace ACMaintenanceTracker.Models
         [DataType(DataType.Date)]
         public DateTime? InstallationDate { get; set; }
 
-        //[Display(Name = "Capacity")]
-        //public string Capacity { get; set; } // e.g., "1000kVA" for transformers, "500kW" for generators
-
-        //[Display(Name = "Last Service Date")]
-        //[DataType(DataType.Date)]
-        //public DateTime? LastServiceDate { get; set; }
 
         [Display(Name = "Next Service Date")]
         [DataType(DataType.Date)]
@@ -55,6 +50,16 @@ namespace ACMaintenanceTracker.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public List<MaintenanceRecord> MaintenanceRecords { get; set; } = new List<MaintenanceRecord>();
+
+        // For AC Indoor Units - reference to connected outdoor unit
+        [Display(Name = "Connected Outdoor Unit")]
+        [ForeignKey("ConnectedOutdoorUnitId")]
+        public Equipment ConnectedOutdoorUnit { get; set; }
+        public int? ConnectedOutdoorUnitId { get; set; }
+
+        // For AC Outdoor Units - collection of connected indoor units
+        [InverseProperty("ConnectedOutdoorUnit")]
+        public ICollection<Equipment> ConnectedIndoorUnits { get; set; }
     }
 
     public class MaintenanceRecord

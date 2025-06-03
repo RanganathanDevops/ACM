@@ -101,6 +101,30 @@
             align-items: center;
         }
 
+        .connected-unit-card {
+            border-left: 4px solid var(--accent-color);
+            border-radius: 8px;
+            margin: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+            .connected-unit-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+            }
+
+            .connected-unit-card .card-header {
+                background-color: rgba(72, 149, 239, 0.1);
+                color: var(--dark-color);
+                padding: 1rem;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            }
+
+            .connected-unit-card .card-body {
+                padding: 1rem;
+            }
+
         .table {
             margin-top: 1rem;
             border-radius: 8px;
@@ -280,6 +304,44 @@
                     @* <dd class="col-sm-9">@Model.Capacity</dd> *@
                 </dl>
 
+                @if (Model.EquipmentType == EquipmentType.ACIndoorUnit && Model.ConnectedOutdoorUnit != null)
+                {
+                    <div class="connected-unit-card animate__animated animate__fadeIn">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-link me-2"></i>Connected Outdoor Unit
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <dl class="row">
+                                        <dt class="col-sm-5">Identifier:</dt>
+                                        <dd class="col-sm-7">@Model.ConnectedOutdoorUnit.EquipmentIdentifier</dd>
+
+                                        <dt class="col-sm-5">Model:</dt>
+                                        <dd class="col-sm-7">@Model.ConnectedOutdoorUnit.Model</dd>
+                                    </dl>
+                                </div>
+                                <div class="col-md-6">
+                                    <dl class="row">
+                                        <dt class="col-sm-5">Manufacturer:</dt>
+                                        <dd class="col-sm-7">@Model.ConnectedOutdoorUnit.Manufacturer</dd>
+
+                                        <dt class="col-sm-5">Installation Date:</dt>
+                                        <dd class="col-sm-7">@Model.ConnectedOutdoorUnit.InstallationDate?.ToString("d")</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                            <div class="text-end mt-2">
+                                <a asp-action="Details" asp-route-id="@Model.ConnectedOutdoorUnit.Id" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-external-link-alt me-1"></i>View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+
                 <h5 class="maintenance-title animate__animated animate__fadeIn">
                     <i class="fas fa-tools me-2"></i>Maintenance Records
                 </h5>
@@ -423,59 +485,59 @@
             // Create maintenance status chart if records exist
             @if (Model.MaintenanceRecords != null && Model.MaintenanceRecords.Any())
             {
-                        <text>
-                        const ctx = document.createElement('canvas');
-                        ctx.id = 'maintenanceChart';
-                        $('.maintenance-title').after('<div class="chart-container mb-4"><canvas id="maintenanceChart" height="100"></canvas></div>');
+                    <text>
+                    const ctx = document.createElement('canvas');
+                    ctx.id = 'maintenanceChart';
+                    $('.maintenance-title').after('<div class="chart-container mb-4"><canvas id="maintenanceChart" height="100"></canvas></div>');
 
-                        const statusCounts = {
-                            overdue: @Model.MaintenanceRecords.Count(r => r.NextMaintenanceDate.HasValue && r.NextMaintenanceDate < DateTime.Now),
-                            dueSoon: @Model.MaintenanceRecords.Count(r => r.NextMaintenanceDate.HasValue && r.NextMaintenanceDate >= DateTime.Now && r.NextMaintenanceDate < DateTime.Now.AddDays(30)),
-                            upToDate: @Model.MaintenanceRecords.Count(r => !r.NextMaintenanceDate.HasValue || r.NextMaintenanceDate >= DateTime.Now.AddDays(30))
-                        };
+                    const statusCounts = {
+                        overdue: @Model.MaintenanceRecords.Count(r => r.NextMaintenanceDate.HasValue && r.NextMaintenanceDate < DateTime.Now),
+                        dueSoon: @Model.MaintenanceRecords.Count(r => r.NextMaintenanceDate.HasValue && r.NextMaintenanceDate >= DateTime.Now && r.NextMaintenanceDate < DateTime.Now.AddDays(30)),
+                        upToDate: @Model.MaintenanceRecords.Count(r => !r.NextMaintenanceDate.HasValue || r.NextMaintenanceDate >= DateTime.Now.AddDays(30))
+                    };
 
-                        new Chart(ctx, {
-                            type: 'doughnut',
-                            data: {
-                                labels: ['Overdue', 'Due Soon', 'Up to Date'],
-                                datasets: [{
-                                    data: [statusCounts.overdue, statusCounts.dueSoon, statusCounts.upToDate],
-                                    backgroundColor: [
-                                        'rgba(247, 37, 133, 0.8)',
-                                        'rgba(248, 150, 30, 0.8)',
-                                        'rgba(76, 201, 240, 0.8)'
-                                    ],
-                                    borderColor: [
-                                        'rgba(247, 37, 133, 1)',
-                                        'rgba(248, 150, 30, 1)',
-                                        'rgba(76, 201, 240, 1)'
-                                    ],
-                                    borderWidth: 1
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                plugins: {
-                                    legend: {
-                                        position: 'bottom',
-                                    },
-                                    title: {
-                                        display: true,
-                                        text: 'Maintenance Status Overview',
-                                        font: {
-                                            size: 16,
-                                            weight: 'bold'
-                                        }
-                                    }
+                    new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Overdue', 'Due Soon', 'Up to Date'],
+                            datasets: [{
+                                data: [statusCounts.overdue, statusCounts.dueSoon, statusCounts.upToDate],
+                                backgroundColor: [
+                                    'rgba(247, 37, 133, 0.8)',
+                                    'rgba(248, 150, 30, 0.8)',
+                                    'rgba(76, 201, 240, 0.8)'
+                                ],
+                                borderColor: [
+                                    'rgba(247, 37, 133, 1)',
+                                    'rgba(248, 150, 30, 1)',
+                                    'rgba(76, 201, 240, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
                                 },
-                                cutout: '70%',
-                                animation: {
-                                    animateScale: true,
-                                    animateRotate: true
+                                title: {
+                                    display: true,
+                                    text: 'Maintenance Status Overview',
+                                    font: {
+                                        size: 16,
+                                        weight: 'bold'
+                                    }
                                 }
+                            },
+                            cutout: '70%',
+                            animation: {
+                                animateScale: true,
+                                animateRotate: true
                             }
-                        });
-                        </text>
+                        }
+                    });
+                    </text>
             }
         });
     </script>

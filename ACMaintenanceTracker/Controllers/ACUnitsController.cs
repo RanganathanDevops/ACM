@@ -61,6 +61,8 @@ namespace ACMaintenanceTracker.Controllers
 
             var equipment = await _context.Equipment
                 .Include(e => e.MaintenanceRecords)
+                .Include(e => e.ConnectedOutdoorUnit)
+                .Include(e => e.ConnectedIndoorUnits)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (equipment == null)
