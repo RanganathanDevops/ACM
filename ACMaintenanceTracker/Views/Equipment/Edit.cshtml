@@ -1,6 +1,5 @@
 ﻿@using ACMaintenanceTracker.Models
 @model ACMaintenanceTracker.Models.EquipmentEditViewModel
-@model 
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     ViewData["Title"] = "Edit Equipment";
@@ -298,14 +297,14 @@
                         <span asp-validation-for="InstallationDate" class="field-validation-error"></span>
                     </div>
 
-                    <div class="form-group">
+                    @* <div class="form-group">
                         <label asp-for="ConnectedOutdoorUnitId" class="control-label"></label>
                         <select asp-for="ConnectedOutdoorUnitId" class="form-control"
                                 asp-items="@(new SelectList(ViewBag.AvailableOutdoorUnits, "Id", "EquipmentIdentifier"))">
                             <option value="">-- Select Outdoor Unit --</option>
                         </select>
                         <span asp-validation-for="ConnectedOutdoorUnitId" class="text-danger"></span>
-                    </div>
+                    </div> *@
                 </div>
 
                 <div class="action-buttons">

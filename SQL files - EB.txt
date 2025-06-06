@@ -1,0 +1,47 @@
+-- Add EB Readings table to your existing schema
+CREATE TABLE "EBReadings" (
+    "Id" SERIAL PRIMARY KEY,
+    "EquipmentId" INT NOT NULL REFERENCES "Equipment"("Id") ON DELETE CASCADE,
+    "ReadingDate" TIMESTAMP NOT NULL,
+    "PreviousReading" DECIMAL(10,2) NOT NULL,
+    "CurrentReading" DECIMAL(10,2) NOT NULL,
+    "UnitsConsumed" DECIMAL(10,2) GENERATED ALWAYS AS ("CurrentReading" - "PreviousReading") STORED,
+    "RatePerUnit" DECIMAL(10,2) NOT NULL,
+    "TotalCost" DECIMAL(10,2) GENERATED ALWAYS AS (("CurrentReading" - "PreviousReading") * "RatePerUnit") STORED,
+    "Notes" TEXT,
+    "RecordedBy" VARCHAR(100) NOT NULL,
+    "CreatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "ValidReadingCheck" CHECK ("CurrentReading" >= "PreviousReading")
+);
+
+-- Create indexes for better performance
+CREATE INDEX "IX_EBReadings_EquipmentId" ON "EBReadings"("EquipmentId");
+CREATE INDEX "IX_EBReadings_ReadingDate" ON "EBReadings"("ReadingDate");
+
+-- Optional: Add a view for combined equipment and readings information
+CREATE OR REPLACE VIEW "EquipmentWithLatestReading" AS
+SELECT 
+    e.*,
+    r."ReadingDate" AS "LastReadingDate",
+    r."CurrentReading" AS "LastReadingValue",
+    r."UnitsConsumed" AS "LastUnitsConsumed"
+FROM 
+    "Equipment" e
+LEFT JOIN LATERAL (
+    SELECT * FROM "EBReadings" 
+    WHERE "EquipmentId" = e."Id" 
+    ORDER BY "ReadingDate" DESC 
+    LIMIT 1
+) r ON true;
+
+-- Sample data for EB Readings (optional)
+INSERT INTO "EBReadings" (
+    "EquipmentId", "ReadingDate", "PreviousReading", 
+    "CurrentReading", "RatePerUnit", "Notes", "RecordedBy"
+) VALUES
+(1, '2023-09-01 08:00:00', 0, 1250.50, 8.75, 'Initial reading for AC-101', 'system'),
+(1, '2023-10-01 08:00:00', 1250.50, 1450.25, 8.75, 'Monthly reading', 'jane.doe'),
+(2, '2023-09-01 08:00:00', 0, 1100.00, 8.75, 'Initial reading for AC-102', 'system'),
+(2, '2023-10-01 08:00:00', 1100.00, 1325.75, 8.75, 'Monthly reading', 'jane.doe'),
+(5, '2023-09-01 08:00:00', 0, 5000.00, 12.50, 'Generator initial reading', 'system'),
+(5, '2023-10-01 08:00:00', 5000.00, 5250.25, 12.50, 'Generator monthly reading', 'john.smith');

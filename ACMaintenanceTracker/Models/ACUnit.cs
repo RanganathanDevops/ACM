@@ -42,14 +42,18 @@ namespace ACMaintenanceTracker.Models
         [DataType(DataType.Date)]
         public DateTime? InstallationDate { get; set; }
 
-
         [Display(Name = "Next Service Date")]
         [DataType(DataType.Date)]
         public DateTime? NextServiceDate { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+        //[Display(Name = "Is Active")]
+        //public bool IsActive { get; set; } = true;
+
+        // Navigation properties
         public List<MaintenanceRecord> MaintenanceRecords { get; set; } = new List<MaintenanceRecord>();
+        public List<EBReading> EBReadings { get; set; } = new List<EBReading>();
 
         // For AC Indoor Units - reference to connected outdoor unit
         [Display(Name = "Connected Outdoor Unit")]
@@ -92,11 +96,42 @@ namespace ACMaintenanceTracker.Models
         [Display(Name = "Parts Replaced")]
         public string? PartsReplaced { get; set; }
 
-        //[Display(Name = "Service Hours")]
-        //public decimal? ServiceHours { get; set; }
-
         [Display(Name = "Cost")]
         public decimal? Cost { get; set; }
+    }
+
+    public class EBReading
+    {
+        public int Id { get; set; }
+
+        public int EquipmentId { get; set; }
+        public Equipment Equipment { get; set; }
+
+        [Display(Name = "Reading Date")]
+        public DateTime ReadingDate { get; set; } = DateTime.UtcNow;
+
+        [Display(Name = "Previous Reading")]
+        public decimal PreviousReading { get; set; }
+
+        [Display(Name = "Current Reading")]
+        public decimal CurrentReading { get; set; }
+
+        [Display(Name = "Units Consumed")]
+        public decimal UnitsConsumed { get; set; }
+
+        [Display(Name = "Rate Per Unit")]
+        public decimal RatePerUnit { get; set; }
+
+        [Display(Name = "Total Cost")]
+        public decimal TotalCost { get; set; }
+
+        public string Notes { get; set; }
+
+        [Required]
+        [Display(Name = "Recorded By")]
+        public string RecordedBy { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 
     public class EquipmentCreateViewModel
@@ -111,7 +146,6 @@ namespace ACMaintenanceTracker.Models
         public string Model { get; set; }
         public string Manufacturer { get; set; }
         public DateTime InstallationDate { get; set; }
-        //public string Capacity { get; set; }
     }
 
     public class EquipmentEditViewModel
@@ -123,7 +157,6 @@ namespace ACMaintenanceTracker.Models
         public string Model { get; set; }
         public string Manufacturer { get; set; }
         public DateTime InstallationDate { get; set; }
-        //public string Capacity { get; set; }
     }
 
     public class CreateMaintenanceRecord
@@ -142,7 +175,20 @@ namespace ACMaintenanceTracker.Models
 
         public DateTime? NextMaintenanceDate { get; set; }
         public string? PartsReplaced { get; set; }
-        //public decimal? ServiceHours { get; set; }
         public decimal? Cost { get; set; }
+    }
+
+    public class EBReadingViewModel
+    {
+        public int EquipmentId { get; set; }
+        public DateTime ReadingDate { get; set; }
+        public decimal PreviousReading { get; set; }
+        public decimal CurrentReading { get; set; }
+        public decimal RatePerUnit { get; set; }
+        public string Notes { get; set; }
+        public string RecordedBy { get; set; }
+
+        // For dropdown list
+        public List<Equipment> EquipmentList { get; set; }
     }
 }

@@ -1,0 +1,399 @@
+﻿@model ACMaintenanceTracker.Models.EBReadingViewModel
+
+@{
+    ViewBag.Title = "Add EB Reading";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewBag.Title</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --success-color: #4cc9f0;
+            --danger-color: #f72585;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .form-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .form-container:hover {
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .form-header h2 {
+            color: var(--primary-color);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .form-label.required:after {
+            content: " *";
+            color: var(--danger-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+            outline: none;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .input-group .form-control {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .input-group-text {
+            padding: 0.75rem 1rem;
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            border-left: none;
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+            font-size: 0.875rem;
+        }
+
+        .calculation-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .calculation-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .calculation-label {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .calculation-value {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-secondary {
+            border: 1px solid #ced4da;
+            color: #6c757d;
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: #e9ecef;
+        }
+
+        .btn-reset {
+            background-color: white;
+            border: 1px solid var(--danger-color);
+            color: var(--danger-color);
+        }
+
+        .btn-reset:hover {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .text-danger {
+            color: var(--danger-color);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: #6c757d;
+            text-decoration: none;
+            margin-bottom: 1rem;
+        }
+
+        .back-link:hover {
+            color: var(--primary-color);
+        }
+
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @@keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive adjustments */
+        @@media (max-width: 768px) {
+            .form-container {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+            
+            .calculation-row {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <div class="form-header">
+            <h2><i class="fas fa-bolt"></i> Add EB Reading</h2>
+            <a href="@Url.Action("Index")" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back to readings list
+            </a>
+        </div>
+
+        @using (Html.BeginForm("Create", "EBReadings", FormMethod.Post, new { id = "readingForm" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.EquipmentId, "Equipment", new { @class = "form-label required" })
+                        @Html.DropDownListFor(model => model.EquipmentId, 
+                            new SelectList(Model.EquipmentList, "Id", "EquipmentIdentifier"), 
+                            "-- Select Equipment --", 
+                            new { @class = "form-control", required = "required" })
+                        @Html.ValidationMessageFor(model => model.EquipmentId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ReadingDate, "Reading Date", new { @class = "form-label required" })
+                        @Html.TextBoxFor(model => model.ReadingDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                        @Html.ValidationMessageFor(model => model.ReadingDate, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PreviousReading, "Previous Reading", new { @class = "form-label required" })
+                        <div class="input-group">
+                            @Html.TextBoxFor(model => model.PreviousReading, new { @class = "form-control", type = "number", step = "0.01", min = "0", required = "required" })
+                            <span class="input-group-text">kWh</span>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.PreviousReading, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CurrentReading, "Current Reading", new { @class = "form-label required" })
+                        <div class="input-group">
+                            @Html.TextBoxFor(model => model.CurrentReading, new { @class = "form-control", type = "number", step = "0.01", min = "0", required = "required" })
+                            <span class="input-group-text">kWh</span>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.CurrentReading, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.RatePerUnit, "Rate per Unit", new { @class = "form-label required" })
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            @Html.TextBoxFor(model => model.RatePerUnit, new { @class = "form-control", type = "number", step = "0.01", min = "0.01", required = "required" })
+                            <span class="input-group-text">/kWh</span>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.RatePerUnit, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="calculation-card">
+                <div class="calculation-row">
+                    <span class="calculation-label">Units Consumed:</span>
+                    <span class="calculation-value" id="unitsConsumed">0.00 kWh</span>
+                </div>
+                <div class="calculation-row">
+                    <span class="calculation-label">Total Cost:</span>
+                    <span class="calculation-value" id="totalCost">$0.00</span>
+                </div>
+                <div class="calculation-row">
+                    <span class="calculation-label">Rate Applied:</span>
+                    <span class="calculation-value" id="rateApplied">$0.00/kWh</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Notes, "Notes", new { @class = "form-label" })
+                @Html.TextAreaFor(model => model.Notes, new { @class = "form-control", rows = "3", placeholder = "Optional notes about this reading..." })
+                @Html.ValidationMessageFor(model => model.Notes, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group text-end">
+                <button type="reset" class="btn btn-reset me-2">
+                    <i class="fas fa-undo"></i> Reset
+                </button>
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                    <i class="fas fa-save"></i> Save Reading
+                </button>
+            </div>
+        }
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get current date and set as default for reading date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('ReadingDate').value = today;
+            
+            // Calculate consumption whenever values change
+            const inputs = ['EquipmentId', 'PreviousReading', 'CurrentReading', 'RatePerUnit'];
+            inputs.forEach(id => {
+                document.getElementById(id).addEventListener('change', calculateConsumption);
+                document.getElementById(id).addEventListener('input', calculateConsumption);
+            });
+            
+            // Fetch previous reading when equipment changes
+            document.getElementById('EquipmentId').addEventListener('change', function() {
+                const equipmentId = this.value;
+                if (equipmentId) {
+                    fetch(`/EBReadings/GetPreviousReading?equipmentId=${equipmentId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            document.getElementById('PreviousReading').value = data.previousReading || 0;
+                            calculateConsumption();
+                        })
+                        .catch(error => {
+                            console.error('Error fetching previous reading:', error);
+                        });
+                }
+            });
+            
+            // Calculate consumption function
+            function calculateConsumption() {
+                const prev = parseFloat(document.getElementById('PreviousReading').value) || 0;
+                const current = parseFloat(document.getElementById('CurrentReading').value) || 0;
+                const rate = parseFloat(document.getElementById('RatePerUnit').value) || 0;
+                
+                // Validate current >= previous
+                const currentInput = document.getElementById('CurrentReading');
+                const errorElement = document.querySelector('[data-valmsg-for="CurrentReading"]');
+                
+                if (current < prev) {
+                    currentInput.classList.add('is-invalid');
+                    if (errorElement) {
+                        errorElement.textContent = 'Current reading must be greater than or equal to previous reading';
+                    }
+                } else {
+                    currentInput.classList.remove('is-invalid');
+                    if (errorElement) {
+                        errorElement.textContent = '';
+                    }
+                }
+                
+                const units = (current - prev).toFixed(2);
+                const cost = (units * rate).toFixed(2);
+                
+                // Update summary
+                document.getElementById('unitsConsumed').textContent = `${units} kWh`;
+                document.getElementById('totalCost').textContent = `$${cost}`;
+                document.getElementById('rateApplied').textContent = `$${rate.toFixed(2)}/kWh`;
+            }
+            
+            // Form submission handling
+            document.getElementById('readingForm').addEventListener('submit', function(e) {
+                const submitBtn = document.getElementById('submitBtn');
+                const prev = parseFloat(document.getElementById('PreviousReading').value) || 0;
+                const current = parseFloat(document.getElementById('CurrentReading').value) || 0;
+                
+                if (current < prev) {
+                    e.preventDefault();
+                    alert('Current reading must be greater than or equal to previous reading');
+                    return;
+                }
+                
+                // Disable button and show loading state
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner spinner"></i> Saving...';
+            });
+            
+            // Initial calculation
+            calculateConsumption();
+        });
+    </script>
+</body>
+</html>
